@@ -32,7 +32,7 @@ You only zoom in as far as is useful — most teams draw Levels 1 and 2, occasio
 flowchart TB
     applicant(["Applicant"])
     adzuna[/"Adzuna API (job listings)"/]
-    claude[/"Claude API (LLM)"/]
+    llm[/"OpenAI API (LLM)"/]
     apply[/"Application targets — portals, email (FUTURE)"/]
 
     subgraph boundary["System boundary — what we build (UI + backend)"]
@@ -43,8 +43,8 @@ flowchart TB
     sys -->|"matched jobs, gaps, tailored resume + cover letter"| applicant
     sys -->|"search query"| adzuna
     adzuna -->|"job listings"| sys
-    sys -->|"prompts"| claude
-    claude -->|"completions"| sys
+    sys -->|"prompts"| llm
+    llm -->|"completions"| sys
     sys -.->|"submit application (gated, future)"| apply
 ```
 
@@ -69,7 +69,7 @@ flowchart TB
 - **Adzuna API** — source of job listings (free dev tier, AU coverage). Accessed
   behind a pluggable `JobSource` interface (see ADR-0007), so swapping/adding
   sources later doesn't change this boundary.
-- **Claude API** — the LLM (Anthropic, `claude-opus-4-8`; see ADR-0004) used for
+- **OpenAI API** — the LLM (OpenAI; specific model per ADR-0010) used for
   parsing, matching, gap analysis, and tailoring.
 - **Application targets (FUTURE)** — job portals / email to which applications would
   be submitted. **Deferred and human-gated** (auto-apply is the last, riskiest
@@ -88,7 +88,7 @@ flowchart TB
   the **architecture diagram**, not here.
 
 > Rule of thumb: if we **build and deploy** it (front end, backend, observability),
-> it's *inside* the box at context level. If we only **call** it (Adzuna, Claude),
+> it's *inside* the box at context level. If we only **call** it (Adzuna, OpenAI),
 > it's an *external* system outside the box.
 
 ## Notes / open items to review

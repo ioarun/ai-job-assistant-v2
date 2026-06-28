@@ -17,14 +17,14 @@ as candidate ADRs.
 | Status | Draft |
 | Reviewers | Self / Claude (tutor) |
 | Supersedes | — |
-| Related | PRD (`prd.md`), diagrams (`diagrams/`), ADRs 0001–0009 (`adr/`) |
+| Related | PRD (`prd.md`), diagrams (`diagrams/`), ADRs 0001–0010 (`adr/`) |
 
 ---
 
 ## 1. Summary (TL;DR)
 
 Build the **thin vertical slice** the PRD §5 defines: an applicant uploads a PDF
-resume, the backend parses it into structured data with one Claude call, and the
+resume, the backend parses it into structured data with one OpenAI call, and the
 applicant reviews/approves the result behind a **light HITL gate**. The whole path
 is **traced in Langfuse** and the parse quality is **measured by an offline eval
 set**.
@@ -69,7 +69,7 @@ Containers and boundaries are already drawn — this RFC does not redraw them:
 - **Flow (behavioral):** `diagrams/flow.md` — the MVP is the `parse → reviewParse`
   subgraph.
 - **Architecture (C4 L2):** `diagrams/architecture.md` — MVP containers are
-  Front-end, Backend API, Postgres, Langfuse, + external Claude. (Vector store and
+  Front-end, Backend API, Postgres, Langfuse, + external OpenAI. (Vector store and
   Adzuna are dotted / Post-MVP.)
 
 What this RFC adds is **C4 L3 — the components inside the Backend API** and how they
@@ -91,7 +91,7 @@ ingest ──▶ parse ──▶ [interrupt: human review] ──▶ persist_app
 | Node | Responsibility | LLM? | Notes |
 |---|---|---|---|
 | `ingest` | Validate upload, extract/prepare the document for the model | No | PDF handling — see §6 |
-| `parse` | One Claude call → structured resume (Pydantic schema) | **Yes** | The only LLM call in the MVP |
+| `parse` | One OpenAI call → structured resume (Pydantic schema) | **Yes** | The only LLM call in the MVP |
 | *(interrupt)* | Pause the graph, surface the parse to the UI for the light gate | — | LangGraph `interrupt()` — see §4.1 |
 | `persist_approved` | Write the approved structured resume to Postgres | No | Marks the run approved |
 
@@ -113,7 +113,7 @@ LangGraph needs a **checkpointer** to survive the interrupt. Options:
   (ADR-0009), one fewer moving part, production-like. **Recommended.**
 - In-memory — loses state on restart; only acceptable for a throwaway spike.
 
-**[OPEN → candidate ADR-0010]** Confirm: LangGraph checkpoints live in the app
+**[OPEN → candidate ADR-0011]** Confirm: LangGraph checkpoints live in the app
 Postgres. (This was an open item on the architecture diagram.)
 
 ## 5. Data model (Postgres)
@@ -141,19 +141,24 @@ Notes / opens:
 Two how-questions: (a) how the PDF reaches the model, (b) how we get reliable
 structured output.
 
-### 6.1 PDF → model: native document vs. extract-then-prompt  → candidate ADR-0011
-- **Native PDF to Claude** (send the PDF as a document block via the Files API /
-  document content block) — Claude reads layout + text directly; less preprocessing;
-  generally higher fidelity on real-world resumes. **Recommended.**
-- **Extract text first** (`pypdf`/`pdfplumber`) then prompt with plain text — more
-  control, no binary upload, but loses layout and struggles on multi-column resumes.
+### 6.1 PDF → model: native document vs. extract-then-prompt  → candidate ADR-0012
+- **Native PDF to the model** (OpenAI supports PDF **file inputs**) — the model reads
+  layout + text directly; less preprocessing; generally higher fidelity on
+  real-world (multi-column, table-heavy) resumes. **Recommended.**
+- **Extract text first**, then prompt with the extracted text — gives an inspectable
+  intermediate (useful for debugging/evals) but adds a step that can mis-read layout
+  before the model sees it. Naive extractors (`pypdf`/`pdfplumber`) struggle on
+  multi-column resumes; a layout-aware loader like **`UnstructuredPDFLoader`**
+  (`strategy="hi_res"`, which adds a layout model + OCR and heavier system deps —
+  poppler/tesseract) is the stronger representative of this path.
 
-**[OPEN → candidate ADR-0011]** Recommend native PDF document input to Claude; keep
-a text-extraction fallback behind the same `ingest` node interface.
+**[OPEN → candidate ADR-0012]** Recommend native PDF input to the model; keep a
+text-extraction fallback (e.g. `UnstructuredPDFLoader` hi_res) behind the same
+`ingest` node interface — built only if the spike shows native parsing struggling.
 
 ### 6.2 Structured output
-Use the Anthropic SDK's **structured outputs** (`client.messages.parse()` with a
-**Pydantic** schema, `claude-opus-4-8`, adaptive thinking) so the parse returns a
+Use OpenAI's **Structured Outputs** (the `openai` SDK's Pydantic `parse` helper, or
+`response_format` with a JSON schema; model per ADR-0010) so the parse returns a
 validated object, not free text we have to re-parse. The schema is the contract:
 
 ```python
@@ -174,9 +179,9 @@ class ParsedResume(BaseModel):
     education: list[str] = []
 ```
 
-The model/params are governed by ADR-0004 and the `claude-api` skill (model IDs,
-`messages.parse`, adaptive thinking, streaming) — that skill is the source of truth
-when you write this, not memory.
+The model/params are governed by ADR-0010; pin the exact model ID and the Structured
+Outputs / file-input API specifics from OpenAI's official docs when you write this,
+not from memory.
 
 ### 6.3 Prompt versioning
 The parse prompt is **versioned** (e.g. a string constant with a `prompt_version`
@@ -212,8 +217,9 @@ Notes:
 ## 8. Observability & evals (the two practices we don't skip)
 
 ### 8.1 Tracing (Langfuse, ADR-0005)
-- Every Claude call and every graph node is **traced** to self-hosted Langfuse
-  (LangGraph has Langfuse integration; the Anthropic call is wrapped/instrumented).
+- Every LLM call and every graph node is **traced** to self-hosted Langfuse
+  (LangGraph has Langfuse integration; the OpenAI call is wrapped via Langfuse's
+  OpenAI integration).
 - `parse_run.trace_id` links a DB row to its trace, so any parse is inspectable
   end-to-end.
 - Self-hosted so **resume PII stays local** (PRD §7 risk).
@@ -233,7 +239,7 @@ how it hooks in:
 - **Security / PII:** resumes are sensitive (PRD §7). Self-host Langfuse; keep files
   local; the Anthropic API key and DB creds come from env/secrets, never committed;
   define a retention policy. [OPEN — retention policy specifics]
-- **Cost/latency budget:** MVP is one Claude call per resume; target < a few seconds
+- **Cost/latency budget:** MVP is one OpenAI call per resume; target < a few seconds
   and a few cents per parse. [ASSUMPTION — set real numbers from the feasibility
   spike.] Prompt caching considered later when prompts grow.
 - **Error handling:** `parse_run.status = failed` on model/validation error; the UI
@@ -246,14 +252,14 @@ how it hooks in:
 
 Most stack alternatives are already argued in the ADRs — not repeated here:
 - Orchestration (LangGraph vs. plain code / other frameworks) → ADR-0003.
-- LLM (Claude vs. others) → ADR-0004.
+- LLM (OpenAI vs. Claude/others) → ADR-0010 (supersedes ADR-0004).
 - Observability (Langfuse vs. LangSmith) → ADR-0005.
 - DB (Postgres vs. SQLite/NoSQL) → ADR-0009.
 - Front end (separate vs. folded) → ADR-0008.
 
 New, RFC-level alternatives surfaced above (each a candidate ADR):
-- LangGraph checkpoint location (§4.2) → candidate ADR-0010.
-- PDF ingestion method (§6.1) → candidate ADR-0011.
+- LangGraph checkpoint location (§4.2) → candidate ADR-0011.
+- PDF ingestion method (§6.1) → candidate ADR-0012.
 - Prompt storage: code constant vs. Langfuse-managed (§6.3).
 - Raw-file storage: filesystem/`bytea` vs. MinIO/S3 (§5).
 
@@ -282,7 +288,7 @@ Confirming the MVP doesn't box us in — **not designing these now**:
 
 Sequenced delivery (goals/exit-criteria per phase live in `roadmap.md`):
 1. **Walking skeleton** — FastAPI + Postgres + Langfuse up under Docker; one traced
-   hello-Claude call; CI runs.
+   hello-LLM (OpenAI) call; CI runs.
 2. **Parse slice** — `ingest → parse` with structured output, traced.
 3. **HITL gate** — interrupt + approve/corrections + persist.
 4. **Eval gate** — labeled set + scoring wired into CI.
@@ -290,8 +296,8 @@ Sequenced delivery (goals/exit-criteria per phase live in `roadmap.md`):
 
 ## 14. Open questions (consolidated)
 
-- [OPEN → ADR-0010] LangGraph checkpoint location (recommend app Postgres).
-- [OPEN → ADR-0011] PDF ingestion method (recommend native PDF to Claude + fallback).
+- [OPEN → ADR-0011] LangGraph checkpoint location (recommend app Postgres).
+- [OPEN → ADR-0012] PDF ingestion method (recommend native PDF to the model + fallback).
 - [OPEN] Prompt storage: code constant (MVP) vs. Langfuse-managed (later).
 - [OPEN] Raw-file storage: filesystem/`bytea` (MVP) vs. MinIO/S3 (later).
 - [OPEN] Migration tool confirmation (Alembic assumed).

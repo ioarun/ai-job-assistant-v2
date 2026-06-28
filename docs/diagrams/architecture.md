@@ -31,13 +31,13 @@ flowchart TB
     end
 
     adzuna[/"Adzuna API — jobs (POST-MVP)"/]
-    claude[/"Claude API — LLM"/]
+    llm[/"OpenAI API — LLM"/]
     apply[/"Application targets — FUTURE"/]
 
     applicant -->|"uses (HTTPS)"| ui
     ui -->|"JSON / HTTPS"| api
     api -->|"reads / writes (SQL)"| db
-    api -->|"prompts / completions (HTTPS)"| claude
+    api -->|"prompts / completions (HTTPS)"| llm
     api -->|"traces (HTTPS)"| obs
     api -.->|"query / upsert embeddings"| vec
     api -.->|"search jobs (HTTPS)"| adzuna
@@ -59,7 +59,7 @@ flowchart TB
 | Container | Responsibility | Scope | ADR |
 |---|---|---|---|
 | **Front-end web app** | UI the applicant uses (upload resume, review parse, later: pick jobs, approve docs) | MVP (minimal, **separate app**) | ADR-0008 (framework TBD) |
-| **Backend API (FastAPI)** | HTTP API; runs the pipeline (LangGraph in-process); calls Claude/Adzuna; persists data; emits traces | MVP | ADR-0002, ADR-0003 |
+| **Backend API (FastAPI)** | HTTP API; runs the pipeline (LangGraph in-process); calls OpenAI/Adzuna; persists data; emits traces | MVP | ADR-0002, ADR-0003 |
 | **Application DB (Postgres)** | Stores uploaded resumes, parsed/structured data, jobs, run & approval state | MVP | ADR-0009 |
 | **Vector store** | Embeddings for RAG (job/skill retrieval & matching) | Post-MVP | — (TBD) |
 | **Observability (Langfuse)** | Receives traces of LLM calls & pipeline steps; self-hosted so PII stays local | MVP | ADR-0005 |
@@ -74,7 +74,7 @@ Not drawn yet; the backend will contain at least:
 
 ## External systems (recap from context)
 
-- **Claude API** — LLM (`claude-opus-4-8`, ADR-0004). Needed in MVP (parsing).
+- **OpenAI API** — LLM (model per ADR-0010). Needed in MVP (parsing).
 - **Adzuna API** — job listings (ADR-0007). Post-MVP (job search).
 - **Application targets** — submission destinations. Future, human-gated.
 

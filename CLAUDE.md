@@ -49,8 +49,9 @@ An **LLM-powered AI job assistant**. End-to-end intended flow:
 6. **Human-in-the-loop** — the user reviews/approves at key decision points throughout.
 
 **Intended techniques** (to be learned and built incrementally): RAG, agentic AI / multi-agent
-orchestration, and MCP (Model Context Protocol) servers/tools. Use the latest, most capable
-Claude models when building the LLM pieces.
+orchestration, and MCP (Model Context Protocol) servers/tools. This project uses **OpenAI** as
+the LLM (see ADR-0010, which supersedes ADR-0004); specific model TBD. (This overrides the
+global CLAUDE.md's "default to Claude" preference for this project.)
 
 These are goals, not yet implemented — see Status.
 

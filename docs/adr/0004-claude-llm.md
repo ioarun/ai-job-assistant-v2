@@ -1,6 +1,6 @@
 # ADR-0004: Anthropic Claude (`claude-opus-4-8`) as the LLM
 
-Status: Accepted
+Status: Superseded by [ADR-0010](0010-openai-llm.md)
 Date: 2026-06-28
 
 ## Context

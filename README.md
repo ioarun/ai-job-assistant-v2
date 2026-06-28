@@ -48,7 +48,7 @@ debates and design debates don't leak into each other.
 | Artifact | Description | Location | Status |
 |---|---|---|---|
 | PRD | Product requirements (what & why), success + eval criteria | `docs/prd.md` | ✅ |
-| ADRs | Decision records for stack & key choices (0001–0009) | `docs/adr/` | ✅ |
+| ADRs | Decision records for stack & key choices (0001–0010) | `docs/adr/` | ✅ |
 | Context diagram | System as a black box + external actors/systems (C4 L1) | `docs/diagrams/context.md` | ✅ |
 | Flow diagram | Stages as input→output with HITL gates (MVP/Post-MVP/Future) | `docs/diagrams/flow.md` | ✅ |
 | Architecture diagram | Internal containers and who calls whom (C4 L2) | `docs/diagrams/architecture.md` | ✅ |
@@ -56,7 +56,7 @@ debates and design debates don't leak into each other.
 | Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ⬜ |
 | Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/prd.md` §7 | 🟡 |
 | Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ⬜ |
-| Feasibility spike | De-risk experiment: Adzuna query + Claude resume-parse | `notebooks/` | ⬜ |
+| Feasibility spike | De-risk experiment: Adzuna query + OpenAI resume-parse | `notebooks/` | ⬜ |
 | Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ⬜ |
 
 _Subsequent phases (A — Walking skeleton, B — Resume intake, …) will be appended here as we reach them._
