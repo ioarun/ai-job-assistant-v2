@@ -30,6 +30,30 @@ There is no single assistant that takes a person from **resume → matched jobs 
 honest gap analysis → role-tailored resume → application**, while keeping the
 applicant in control of every meaningful decision.
 
+## Prior art & differentiation (future — NOT a v1 goal)
+
+Comparable tools already exist — **AIApply**, **Jobright**, **LoopCV**, **Simplify**,
+**Resumly/Massive** — and the match → tailor → (auto-)apply loop is a mature
+category; per-application tailoring is the recognized quality differentiator within
+it. So this project is **not novel as a product**, and that is fine:
+
+> **Primary goal: learning.** This project exists to learn RAG, agentic AI, MCP, and
+> the modern (2026) software/AI engineering lifecycle — not to out-compete those
+> tools. Rebuilding a known product is a deliberate learning choice. **Product
+> novelty is explicitly out of scope for v1.**
+
+**Potential differentiators — deferred, do NOT build for v1.** If we ever choose to
+make this app genuinely distinct, the defensible angles (most competitors are cloud
+SaaS that ingest your data and spray applications) would be:
+- **Privacy / local-first** — self-hosted, PII stays on the user's machine, BYO API key.
+- **Honesty as a hard constraint** — never fabricate skills/experience.
+- **Transparency / observability** — inspectable traces, not a black box.
+- **Open & MCP-extensible** — pluggable job sources/tools.
+- **Human-gated, quality-over-quantity** — deliberately not reckless spray-and-pray auto-apply.
+
+These are aspirational and revisited only post-learning; none are required for the
+MVP or near-term phases.
+
 ## 2. Goals
 
 If this works, an applicant can:
