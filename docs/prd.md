@@ -30,6 +30,30 @@ There is no single assistant that takes a person from **resume → matched jobs 
 honest gap analysis → role-tailored resume → application**, while keeping the
 applicant in control of every meaningful decision.
 
+## Prior art & differentiation (future — NOT a v1 goal)
+
+Comparable tools already exist — **AIApply**, **Jobright**, **LoopCV**, **Simplify**,
+**Resumly/Massive** — and the match → tailor → (auto-)apply loop is a mature
+category; per-application tailoring is the recognized quality differentiator within
+it. So this project is **not novel as a product**, and that is fine:
+
+> **Primary goal: learning.** This project exists to learn RAG, agentic AI, MCP, and
+> the modern (2026) software/AI engineering lifecycle — not to out-compete those
+> tools. Rebuilding a known product is a deliberate learning choice. **Product
+> novelty is explicitly out of scope for v1.**
+
+**Potential differentiators — deferred, do NOT build for v1.** If we ever choose to
+make this app genuinely distinct, the defensible angles (most competitors are cloud
+SaaS that ingest your data and spray applications) would be:
+- **Privacy / local-first** — self-hosted, PII stays on the user's machine, BYO API key.
+- **Honesty as a hard constraint** — never fabricate skills/experience.
+- **Transparency / observability** — inspectable traces, not a black box.
+- **Open & MCP-extensible** — pluggable job sources/tools.
+- **Human-gated, quality-over-quantity** — deliberately not reckless spray-and-pray auto-apply.
+
+These are aspirational and revisited only post-learning; none are required for the
+MVP or near-term phases.
+
 ## 2. Goals
 
 If this works, an applicant can:
@@ -47,7 +71,8 @@ If this works, an applicant can:
 ## 3. Non-goals (v1)
 
 - **Not** building large-scale job-scraping/crawling infrastructure — v1 uses an
-  existing job source (see [OPEN] in §7).
+  existing job source via the Adzuna API behind a pluggable `JobSource` interface
+  (see ADR-0007).
 - **Not** fully autonomous auto-apply — every submission passes a human gate.
 - **Not** a multi-user SaaS with accounts, auth, or billing — v1 is single-user /
   local-first. [ASSUMPTION]
@@ -151,9 +176,12 @@ The smallest end-to-end, observable, valuable capability:
 - English-language, PDF resumes for v1.
 - The user has the right to apply to the roles surfaced.
 
+**Resolved**
+- ✅ **Job listing source** — Adzuna API (free dev tier, AU coverage) behind a
+  pluggable `JobSource` interface; Jooble / JSearch / MCP-based sources are future
+  adapters. See ADR-0007.
+
 **Open questions**
-- [OPEN] **Job listing source** — official API, an LLM web-search tool, or an
-  approved dataset? This drives the external-systems boundary.
 - [OPEN] **Auto-apply mechanism** — email, portal form-fill, or a browser agent?
   Legality and feasibility need investigation before committing.
 - [OPEN] **Tailored-resume export** — how is the final resume rendered/formatted
