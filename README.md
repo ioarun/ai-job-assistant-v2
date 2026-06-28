@@ -54,7 +54,7 @@ debates and design debates don't leak into each other.
 | Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ✅ |
 | Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ✅ |
 | Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/prd.md` §7 | 🟡 |
-| Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ⬜ |
+| Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ✅ |
 | Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ⬜ |
 
 _Subsequent phases (A — Walking skeleton, B — Resume intake, …) will be appended here as we reach them._
