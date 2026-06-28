@@ -9,6 +9,34 @@ The assistant is designed to help users find AI job opportunities, identify gaps
 3. It then let's users pick from the list of the jobs returned and generates a tailored resume and cover letter for the selected job.
 4. Additionally, it finds gaps in the user's knowledge based on the job description and provides resources/projects suggestion to help fill those gaps.
 
+## Development phases
+
+The project is built in phases following a modern (2026) software/AI engineering
+lifecycle. This section is appended as each phase completes.
+
+**Legend:** ✅ Done · 🟡 In progress / partial · ⬜ Not started
+
+### Phase 0 — Ideation & Planning
+
+Produce the planning artifacts and a plan for every subsequent phase.
+**Exit criteria:** every row below is ✅.
+
+| Artifact | Description | Location | Status |
+|---|---|---|---|
+| PRD | Product requirements (what & why), success + eval criteria | `docs/prd.md` | ✅ |
+| ADRs | Decision records for stack & key choices (0001–0007) | `docs/adr/` | ✅ |
+| Context diagram | System as a black box + external actors/systems | `docs/diagrams/` | ⬜ |
+| Flow diagram | Stages as input→output with HITL gates | `docs/diagrams/` | ⬜ |
+| Architecture diagram | Internal components and who calls whom | `docs/diagrams/` | ⬜ |
+| Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ⬜ |
+| Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ⬜ |
+| Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/prd.md` §7 | 🟡 |
+| Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ⬜ |
+| Feasibility spike | De-risk experiment: Adzuna query + Claude resume-parse | `notebooks/` | ⬜ |
+| Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ⬜ |
+
+_Subsequent phases (A — Walking skeleton, B — Resume intake, …) will be appended here as we reach them._
+
 ## Glossary
 
 Shorthand used across the docs (`docs/`) and in discussion.
