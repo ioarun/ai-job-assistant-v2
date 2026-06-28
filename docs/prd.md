@@ -47,7 +47,8 @@ If this works, an applicant can:
 ## 3. Non-goals (v1)
 
 - **Not** building large-scale job-scraping/crawling infrastructure — v1 uses an
-  existing job source (see [OPEN] in §7).
+  existing job source via the Adzuna API behind a pluggable `JobSource` interface
+  (see ADR-0007).
 - **Not** fully autonomous auto-apply — every submission passes a human gate.
 - **Not** a multi-user SaaS with accounts, auth, or billing — v1 is single-user /
   local-first. [ASSUMPTION]
@@ -151,9 +152,12 @@ The smallest end-to-end, observable, valuable capability:
 - English-language, PDF resumes for v1.
 - The user has the right to apply to the roles surfaced.
 
+**Resolved**
+- ✅ **Job listing source** — Adzuna API (free dev tier, AU coverage) behind a
+  pluggable `JobSource` interface; Jooble / JSearch / MCP-based sources are future
+  adapters. See ADR-0007.
+
 **Open questions**
-- [OPEN] **Job listing source** — official API, an LLM web-search tool, or an
-  approved dataset? This drives the external-systems boundary.
 - [OPEN] **Auto-apply mechanism** — email, portal form-fill, or a browser agent?
   Legality and feasibility need investigation before committing.
 - [OPEN] **Tailored-resume export** — how is the final resume rendered/formatted
