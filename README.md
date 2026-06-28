@@ -26,7 +26,7 @@ Produce the planning artifacts and a plan for every subsequent phase.
 | PRD | Product requirements (what & why), success + eval criteria | `docs/prd.md` | ✅ |
 | ADRs | Decision records for stack & key choices (0001–0007) | `docs/adr/` | ✅ |
 | Context diagram | System as a black box + external actors/systems (C4 L1) | `docs/diagrams/context.md` | ✅ |
-| Flow diagram | Stages as input→output with HITL gates | `docs/diagrams/` | ⬜ |
+| Flow diagram | Stages as input→output with HITL gates (MVP/Post-MVP/Future) | `docs/diagrams/flow.md` | ✅ |
 | Architecture diagram | Internal components and who calls whom | `docs/diagrams/` | ⬜ |
 | Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ⬜ |
 | Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ⬜ |
