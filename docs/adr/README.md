@@ -16,3 +16,5 @@ Consequences).
 | [0005](0005-langfuse-observability.md) | Self-hosted Langfuse for observability/tracing | Accepted |
 | [0006](0006-docker-compose.md) | Docker + docker-compose for local env & packaging | Accepted |
 | [0007](0007-job-source-adzuna.md) | Adzuna API behind a `JobSource` interface | Accepted |
+| [0008](0008-frontend-separate-app.md) | Front end as a separate app (not folded into backend) | Accepted |
+| [0009](0009-postgres-app-db.md) | PostgreSQL as the application database | Accepted |
