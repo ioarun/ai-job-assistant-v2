@@ -19,6 +19,30 @@ lifecycle. This section is appended as each phase completes.
 ### Phase 0 — Ideation & Planning
 
 Produce the planning artifacts and a plan for every subsequent phase.
+
+#### The planning sequence (how we work through Phase 0)
+
+We move from "outside & vague" to "inside & precise" — each step answers one
+question before the next builds on it:
+
+| Step | Question it answers | View |
+|---|---|---|
+| Ideation | What is this, roughly? | — |
+| PRD | What & why? What's in scope? (ground truth for *what*) | — |
+| ADRs | Which decisions did we make, and why? (ongoing — accrue as we decide) | — |
+| Context diagram | Who/what does the system talk to in the world? (the boundary) | structural |
+| Flow diagram | What happens, in what order, with which human approvals? | behavioral |
+| Architecture diagram | What are the internal building blocks, and how do they wire up? | structural |
+| Design Doc / RFC | How is it built? (ground truth for *how*) | — |
+| Eval strategy | How do we measure whether the AI output is good? | — |
+| Roadmap | What are the build phases (A–H), and in what order? | — |
+| Feasibility spike | Can the model / APIs actually do this? (de-risk before building) | — |
+
+Two **lenses** we keep separate: *structural* views show what **is** there (context,
+architecture); *behavioral* views show what **happens** (flow). Two **authorities**
+we keep separate: the **PRD owns _what & why_**, the **RFC owns _how_** — so scope
+debates and design debates don't leak into each other.
+
 **Exit criteria:** every row below is ✅.
 
 | Artifact | Description | Location | Status |
