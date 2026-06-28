@@ -36,7 +36,6 @@ question before the next builds on it:
 | Design Doc / RFC | How is it built? (ground truth for *how*) | — |
 | Eval strategy | How do we measure whether the AI output is good? | — |
 | Roadmap | What are the build phases (A–H), and in what order? | — |
-| Feasibility spike | Can the model / APIs actually do this? (de-risk before building) | — |
 
 Two **lenses** we keep separate: *structural* views show what **is** there (context,
 architecture); *behavioral* views show what **happens** (flow). Two **authorities**
@@ -56,7 +55,6 @@ debates and design debates don't leak into each other.
 | Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ✅ |
 | Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/prd.md` §7 | 🟡 |
 | Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ⬜ |
-| Feasibility spike | De-risk experiment: Adzuna query + OpenAI resume-parse | `notebooks/` | ⬜ |
 | Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ⬜ |
 
 _Subsequent phases (A — Walking skeleton, B — Resume intake, …) will be appended here as we reach them._
