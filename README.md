@@ -53,7 +53,7 @@ debates and design debates don't leak into each other.
 | Flow diagram | Stages as input→output with HITL gates (MVP/Post-MVP/Future) | `docs/diagrams/flow.md` | ✅ |
 | Architecture diagram | Internal containers and who calls whom (C4 L2) | `docs/diagrams/architecture.md` | ✅ |
 | Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ✅ |
-| Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ⬜ |
+| Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ✅ |
 | Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/prd.md` §7 | 🟡 |
 | Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ⬜ |
 | Feasibility spike | De-risk experiment: Adzuna query + OpenAI resume-parse | `notebooks/` | ⬜ |
