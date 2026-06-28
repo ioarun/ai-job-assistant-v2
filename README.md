@@ -19,20 +19,44 @@ lifecycle. This section is appended as each phase completes.
 ### Phase 0 — Ideation & Planning
 
 Produce the planning artifacts and a plan for every subsequent phase.
+
+#### The planning sequence (how we work through Phase 0)
+
+We move from "outside & vague" to "inside & precise" — each step answers one
+question before the next builds on it:
+
+| Step | Question it answers | View |
+|---|---|---|
+| Ideation | What is this, roughly? | — |
+| PRD | What & why? What's in scope? (ground truth for *what*) | — |
+| ADRs | Which decisions did we make, and why? (ongoing — accrue as we decide) | — |
+| Context diagram | Who/what does the system talk to in the world? (the boundary) | structural |
+| Flow diagram | What happens, in what order, with which human approvals? | behavioral |
+| Architecture diagram | What are the internal building blocks, and how do they wire up? | structural |
+| Design Doc / RFC | How is it built? (ground truth for *how*) | — |
+| Eval strategy | How do we measure whether the AI output is good? | — |
+| Roadmap | What are the build phases (A–H), and in what order? | — |
+| Feasibility spike | Can the model / APIs actually do this? (de-risk before building) | — |
+
+Two **lenses** we keep separate: *structural* views show what **is** there (context,
+architecture); *behavioral* views show what **happens** (flow). Two **authorities**
+we keep separate: the **PRD owns _what & why_**, the **RFC owns _how_** — so scope
+debates and design debates don't leak into each other.
+
 **Exit criteria:** every row below is ✅.
 
 | Artifact | Description | Location | Status |
 |---|---|---|---|
 | PRD | Product requirements (what & why), success + eval criteria | `docs/prd.md` | ✅ |
-| ADRs | Decision records for stack & key choices (0001–0007) | `docs/adr/` | ✅ |
-| Context diagram | System as a black box + external actors/systems | `docs/diagrams/` | ⬜ |
-| Flow diagram | Stages as input→output with HITL gates | `docs/diagrams/` | ⬜ |
-| Architecture diagram | Internal components and who calls whom | `docs/diagrams/` | ⬜ |
-| Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ⬜ |
-| Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ⬜ |
+| ADRs | Decision records for stack & key choices (0001–0010) | `docs/adr/` | ✅ |
+| Context diagram | System as a black box + external actors/systems (C4 L1) | `docs/diagrams/context.md` | ✅ |
+| Flow diagram | Stages as input→output with HITL gates (MVP/Post-MVP/Future) | `docs/diagrams/flow.md` | ✅ |
+| Architecture diagram | Internal containers and who calls whom (C4 L2) | `docs/diagrams/architecture.md` | ✅ |
+| Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ✅ |
+| Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ✅ |
 | Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/prd.md` §7 | 🟡 |
 | Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ⬜ |
-| Feasibility spike | De-risk experiment: Adzuna query + Claude resume-parse | `notebooks/` | ⬜ |
+| Feasibility spike | De-risk experiment: Adzuna query + OpenAI resume-parse | `notebooks/` | ⬜ |
 | Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ⬜ |
 
 _Subsequent phases (A — Walking skeleton, B — Resume intake, …) will be appended here as we reach them._
