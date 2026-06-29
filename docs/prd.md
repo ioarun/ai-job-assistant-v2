@@ -154,22 +154,13 @@ The smallest end-to-end, observable, valuable capability:
 ## 7. Risks, assumptions & open questions
 
 **Risks & mitigations**
-- **High-risk regulated domain.** Hiring/employment is high-risk under the EU AI
-  Act, and laws like NYC Local Law 144 regulate automated employment decision
-  tools. — *Mitigation:* keep humans in the loop, make no automated decisions
-  *about candidates*, be transparent, document compliance posture.
-- **Auto-apply ToS / account risk.** Automated submission can violate job-board
-  Terms of Service and risk account bans. — *Mitigation:* human approval gate
-  before any submission; prefer assisted over fully automated; defer auto-apply to
-  the last phase; respect each source's ToS.
-- **Fabrication / hallucination.** Tailoring could invent skills/experience. —
-  *Mitigation:* no-fabrication eval gate (hard constraint), ground generation in
-  the source resume, mandatory human review of tailored output.
-- **PII / data privacy.** Resumes are sensitive personal data. — *Mitigation:*
-  self-host observability (Langfuse) so PII stays local; minimize data sent to
-  third parties; define a retention policy.
-- **LLM cost & latency.** Multi-stage LLM calls can get expensive/slow. —
-  *Mitigation:* cost/latency budget, model selection per task, prompt caching.
+
+Domain (responsible-AI) risks now live in their own first-class register —
+**`docs/responsible-ai.md`** — which is the source of truth: each risk has a
+likelihood/impact, a mitigation, and the artifact/phase that *enforces* it. In brief,
+the headline risks are: regulated-domain misuse, fabrication/hallucination, auto-apply
+ToS/account risk, PII/privacy, and bias/fairness. (Operational cost/latency is tracked
+separately in RFC §9.)
 
 **Assumptions**
 - Single-user / local-first for v1; no auth/billing.

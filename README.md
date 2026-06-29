@@ -36,7 +36,6 @@ question before the next builds on it:
 | Design Doc / RFC | How is it built? (ground truth for *how*) | — |
 | Eval strategy | How do we measure whether the AI output is good? | — |
 | Roadmap | What are the build phases (A–H), and in what order? | — |
-| Feasibility spike | Can the model / APIs actually do this? (de-risk before building) | — |
 
 Two **lenses** we keep separate: *structural* views show what **is** there (context,
 architecture); *behavioral* views show what **happens** (flow). Two **authorities**
@@ -54,12 +53,29 @@ debates and design debates don't leak into each other.
 | Architecture diagram | Internal containers and who calls whom (C4 L2) | `docs/diagrams/architecture.md` | ✅ |
 | Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ✅ |
 | Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ✅ |
-| Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/prd.md` §7 | 🟡 |
-| Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ⬜ |
-| Feasibility spike | De-risk experiment: Adzuna query + OpenAI resume-parse | `notebooks/` | ⬜ |
-| Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ⬜ |
+| Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/responsible-ai.md` | ✅ |
+| Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ✅ |
+| Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ✅ |
 
 _Subsequent phases (A — Walking skeleton, B — Resume intake, …) will be appended here as we reach them._
+
+#### Setting up the project board
+
+A GitHub Projects (v2) board seeded from `docs/roadmap.md` (8 phases A–H + Phase A's 4 concrete steps) can be created with a helper script. **One-time setup:**
+
+```bash
+# Install dependencies (if not already present)
+sudo apt install -y gh jq
+
+# Authenticate with GitHub (opens browser)
+gh auth login
+gh auth refresh -s project,read:project
+
+# Create the board
+bash scripts/create-roadmap-board.sh
+```
+
+This creates a GitHub Projects board under your account, seeds it with issues for each phase/step, and opens the board in your browser. Subsequent phases will be fleshed out just-in-time as you reach them (anti-waterfall)._
 
 ## Glossary
 
