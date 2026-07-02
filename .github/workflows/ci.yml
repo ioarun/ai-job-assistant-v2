@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4          # (pin to the current major)
+      - uses: astral-sh/setup-uv@v5        # installs uv; reads .python-version
+        with:
+          enable-cache: true               # cache the uv download/deps
+      - run: uv sync                        # install deps + dev tools + pinned Python
+      - run: uv run ruff check .            # lint gate
+      - run: uv run pytest tests/           # smoke-test gate
