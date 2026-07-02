@@ -12,70 +12,24 @@ The assistant is designed to help users find AI job opportunities, identify gaps
 ## Development phases
 
 The project is built in phases following a modern (2026) software/AI engineering
-lifecycle. This section is appended as each phase completes.
+lifecycle. Each phase gets its own README as it completes; the full plan lives in
+[docs/roadmap.md](docs/roadmap.md).
 
 **Legend:** ✅ Done · 🟡 In progress / partial · ⬜ Not started
 
-### Phase 0 — Ideation & Planning
-
-Produce the planning artifacts and a plan for every subsequent phase.
-
-#### The planning sequence (how we work through Phase 0)
-
-We move from "outside & vague" to "inside & precise" — each step answers one
-question before the next builds on it:
-
-| Step | Question it answers | View |
-|---|---|---|
-| Ideation | What is this, roughly? | — |
-| PRD | What & why? What's in scope? (ground truth for *what*) | — |
-| ADRs | Which decisions did we make, and why? (ongoing — accrue as we decide) | — |
-| Context diagram | Who/what does the system talk to in the world? (the boundary) | structural |
-| Flow diagram | What happens, in what order, with which human approvals? | behavioral |
-| Architecture diagram | What are the internal building blocks, and how do they wire up? | structural |
-| Design Doc / RFC | How is it built? (ground truth for *how*) | — |
-| Eval strategy | How do we measure whether the AI output is good? | — |
-| Roadmap | What are the build phases (A–H), and in what order? | — |
-
-Two **lenses** we keep separate: *structural* views show what **is** there (context,
-architecture); *behavioral* views show what **happens** (flow). Two **authorities**
-we keep separate: the **PRD owns _what & why_**, the **RFC owns _how_** — so scope
-debates and design debates don't leak into each other.
-
-**Exit criteria:** every row below is ✅.
-
-| Artifact | Description | Location | Status |
+| Phase | Focus | Details | Status |
 |---|---|---|---|
-| PRD | Product requirements (what & why), success + eval criteria | `docs/prd.md` | ✅ |
-| ADRs | Decision records for stack & key choices (0001–0010) | `docs/adr/` | ✅ |
-| Context diagram | System as a black box + external actors/systems (C4 L1) | `docs/diagrams/context.md` | ✅ |
-| Flow diagram | Stages as input→output with HITL gates (MVP/Post-MVP/Future) | `docs/diagrams/flow.md` | ✅ |
-| Architecture diagram | Internal containers and who calls whom (C4 L2) | `docs/diagrams/architecture.md` | ✅ |
-| Design Doc / RFC | The technical *how*; ties diagrams + decisions + risks together | `docs/design.md` | ✅ |
-| Eval strategy | How we measure LLM output quality (eval sets, rubrics, judge) | `docs/eval-strategy.md` | ✅ |
-| Responsible-AI risk register | Domain risks + mitigations (hiring high-risk, ToS, no fabrication) | `docs/responsible-ai.md` | ✅ |
-| Roadmap + per-phase plans | Phase A–H breakdown with goals/scope/exit criteria | `docs/roadmap.md` | ✅ |
-| Project board | GitHub Projects board seeded from the roadmap | GitHub Projects | ✅ |
+| **0 — Ideation & Planning** | PRD, ADRs, diagrams, RFC, eval strategy, roadmap | [README_0.md](README_0.md) | ✅ |
+| **A — Walking skeleton** | FastAPI + traced OpenAI + Langfuse + CI (the rails) | [README_A.md](README_A.md) | ✅ |
+| **B — Resume parse slice** | upload → structured parse → persist, traced; parse eval | [roadmap](docs/roadmap.md) | ⬜ |
+| **C — HITL review + minimal UI** | review gate + UI → **MVP complete** | [roadmap](docs/roadmap.md) | ⬜ |
+| **D — Job search** | Adzuna behind `JobSource` + embeddings/vector match | [roadmap](docs/roadmap.md) | ⬜ |
+| **E — Gap analysis** | match score + honest gaps + upskilling resources | [roadmap](docs/roadmap.md) | ⬜ |
+| **F — Tailored resume + cover letter** | grounded generation (no fabrication) | [roadmap](docs/roadmap.md) | ⬜ |
+| **G — Advanced techniques** | multi-agent orchestration, better RAG, MCP | [roadmap](docs/roadmap.md) | ⬜ |
+| **H — Auto-apply + productionization** | human-gated submit + deploy/monitoring | [roadmap](docs/roadmap.md) | ⬜ |
 
-_Subsequent phases (A — Walking skeleton, B — Resume intake, …) will be appended here as we reach them._
-
-#### Setting up the project board
-
-A GitHub Projects (v2) board seeded from `docs/roadmap.md` (8 phases A–H + Phase A's 4 concrete steps) can be created with a helper script. **One-time setup:**
-
-```bash
-# Install dependencies (if not already present)
-sudo apt install -y gh jq
-
-# Authenticate with GitHub (opens browser)
-gh auth login
-gh auth refresh -s project,read:project
-
-# Create the board
-bash scripts/create-roadmap-board.sh
-```
-
-This creates a GitHub Projects board under your account, seeds it with issues for each phase/step, and opens the board in your browser. Subsequent phases will be fleshed out just-in-time as you reach them (anti-waterfall)._
+> **MVP = A + B + C.**
 
 ## Glossary
 
