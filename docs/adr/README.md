@@ -19,4 +19,6 @@ Consequences).
 | [0008](0008-frontend-separate-app.md) | Front end as a separate app (not folded into backend) | Accepted |
 | [0009](0009-postgres-app-db.md) | PostgreSQL as the application database | Accepted |
 | [0010](0010-openai-llm.md) | OpenAI as the LLM (supersedes ADR-0004) | Accepted |
+| [0012](0012-pdf-ingestion-pypdf.md) | PDF ingestion via `pypdf` (local text extraction); OCR/vision deferred | Accepted |
 | [0013](0013-separate-compose-stacks.md) | Separate compose stacks for app and Langfuse; app on host (refines ADR-0006) | Accepted |
+| [0014](0014-job-ranking-llm-reranker.md) | Job ranking via LLM reranker; retrieve→rerank at scale (defers pgvector) | Accepted |
