@@ -217,5 +217,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Personal revision / study notes — never committed (see revision/)
-/revision/
+# Personal revision / study notes — never committed (see claude.ai/)
+/claude.ai/
+
+# YouTube walkthrough / video-facing notes — never committed
+/youtube/
