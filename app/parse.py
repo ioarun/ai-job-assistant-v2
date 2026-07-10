@@ -6,6 +6,7 @@ from pypdf import PdfReader
 from app.schemas import ParsedResume
 
 PROMPT_VERSION = "parse-v1"
+MODEL = "gpt-4o-mini"  # placeholder — pin after feasibility spike
 
 SYSTEM_PROMPT = (
     "You are a resume parser. Extract ONLY information explicitly present in "
@@ -24,7 +25,7 @@ def extract_text(pdf_bytes: bytes) -> str:
 
 def parse_resume(text: str) -> ParsedResume:
     response = openai.chat.completions.parse(
-        model="gpt-4o-mini",  # placeholder — pin after feasibility spike
+        model=MODEL,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": text},
