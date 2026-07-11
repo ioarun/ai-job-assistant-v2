@@ -1,0 +1,13 @@
+Jordan Lee
+jordan.lee@example.com | +1-555-0100
+
+SKILLS
+Python, SQL, Docker
+
+EXPERIENCE
+Software Engineer — Acme Corp (Jan 2021 - Dec 2023)
+- Built internal tooling to automate deployment pipelines.
+- Reduced build times by 30% through caching improvements.
+
+EDUCATION
+B.S. Computer Science — State University (2016 - 2020)

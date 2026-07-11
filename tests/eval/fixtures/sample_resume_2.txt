@@ -1,0 +1,10 @@
+Morgan Diaz
+morgan.diaz@example.com
+
+SKILLS
+JavaScript, React, AWS
+
+EXPERIENCE
+Frontend Developer — Bright Labs (Mar 2022 - Present)
+- Rebuilt the customer dashboard in React, improving load time by 40%.
+- Migrated hosting to AWS, cutting infra costs by 25%.

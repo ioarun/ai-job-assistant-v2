@@ -31,6 +31,58 @@ Langfuse is consumed from its upstream compose. The app runs on the **host** dur
 A, so plain `localhost` reaches both — no container networking. See
 [docs/adr/0013-separate-compose-stacks.md](docs/adr/0013-separate-compose-stacks.md).
 
+## In depth
+
+### Why a walking skeleton
+
+A walking skeleton is a **thin vertical slice that touches every layer but does almost
+nothing**: the app runs → makes **one OpenAI call** → that call shows up as a **trace in
+Langfuse** → **CI is green**. That's the entire scope. Why bother before any resume logic?
+
+- **Everything reversible and observable** is a founding principle. Wire up tracing, CI,
+  and config *on day one, on a trivial payload*, so every later phase rides on rails that
+  are already proven.
+- Debugging plumbing *while also* debugging AI logic is the trap — separate them. Prove
+  the plumbing first, then build the intelligence on top.
+- The beginner move is to start coding resume parsing immediately. The senior move is to
+  prove the plumbing first. **MVP = a thin slice, not everything at 50%.**
+
+### The decisions worth understanding
+
+1. **`uv` for everything** (ADR-0001) — one tool replacing pip + venv + pip-tools +
+   lockfiles. The modern 2026 default for Python dependency/env/lockfile management.
+2. **Drop-in tracing** (ADR-0005) — one import line does the work:
+   ```python
+   from langfuse.openai import openai   # same OpenAI API, auto-traced
+   ```
+   **Zero call-site changes.** Normal OpenAI code, and every call automatically appears as
+   a trace in the self-hosted Langfuse.
+3. **Lazy singleton config** — `@lru_cache def get_settings()` builds settings on *first
+   call*, never at import time. The payoff: **CI can import the app without any secrets
+   present.** `.env.example` is committed (blank); `.env` is gitignored (real values).
+4. **A credential-wiring gotcha** — the OpenAI and Langfuse SDKs read raw `os.environ`,
+   **not** the Pydantic `Settings` object. The bridge is `uvicorn --env-file .env`, which
+   loads `.env` into the process environment for the SDKs. (An accepted alternative is to
+   assign credentials manually from `get_settings()`; the env-file approach is the default.)
+5. **Separate Docker stacks** (ADR-0013) — the key architectural decision, detailed above.
+6. **`flush()` is demo-only** — Langfuse batches traces in the background, so
+   `get_client().flush()` forces the trace out *before the response returns* for immediate
+   visibility. This would **not** be done per-request in production.
+
+### The engineering-process throughline
+
+Phase A is run the way a 2026 frontier-AI org would, right-sized for a solo project:
+
+- **Phase 0 came first** — PRD → three diagrams (context / flow / architecture) → RFC →
+  ADRs → eval strategy → responsible-AI risk register → roadmap. *Artifacts before code.*
+- **ADRs** record every real decision (the decision + alternatives + the *why*) so they
+  are never re-litigated later.
+- **Evals are the new unit tests** — you can't assert `output == expected` on an LLM. This
+  practice is set up now and pays off in Phase B.
+- **Responsible AI as a first-class risk** — hiring is *high-risk* under the EU AI Act and
+  NYC Local Law 144; "tailoring" must never become **fabrication**; a human gate sits
+  before any outward/irreversible action.
+
 ## Running it locally
 
 Prereqs: [`uv`](https://docs.astral.sh/uv/), Docker, an OpenAI API key, and a self-hosted
@@ -79,7 +131,16 @@ uv run pytest
 
 - `model="gpt-4o-mini"` in `/hello` is a **placeholder** — the real model is pinned after a
   short feasibility spike, before Phase B.
+- The project uses **OpenAI** as the LLM (ADR-0010 supersedes the earlier ADR-0004 "Claude"
+  decision) — stated here so the older ADR doesn't cause confusion.
 - The app is **not** containerized yet (runs on host); a Dockerfile/app service is future
   work (Phase H), as recorded in ADR-0013.
+
+## What comes next — Phase B
+
+With the rails proven, Phase B is the first *real* AI slice: upload a resume → structured
+parse → persist, fully traced, with a parse-quality **eval harness**. That is where the
+LLM-specific engineering (structured outputs, fabrication guardrails, RAG-augmented
+extraction, and dual-mode accuracy evaluation) begins.
 
 Full phase plan: [docs/roadmap.md](docs/roadmap.md).
