@@ -140,7 +140,9 @@ uv run pytest
 
 With the rails proven, Phase B is the first *real* AI slice: upload a resume → structured
 parse → persist, fully traced, with a parse-quality **eval harness**. That is where the
-LLM-specific engineering (structured outputs, fabrication guardrails, RAG-augmented
-extraction, and dual-mode accuracy evaluation) begins.
+LLM-specific engineering (structured outputs, fabrication guardrails, and accuracy
+evaluation) begins. See [README_B.md](README_B.md) for how it actually turned out —
+including a RAG-augmented extraction idea that was designed and then explicitly rejected
+(ADR-0015).
 
 Full phase plan: [docs/roadmap.md](docs/roadmap.md).
