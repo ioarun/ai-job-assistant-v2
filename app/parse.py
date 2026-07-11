@@ -31,6 +31,7 @@ def parse_resume(text: str) -> ParsedResume:
             {"role": "user", "content": text},
         ],
         response_format=ParsedResume,
+        temperature=0,
         name="parse-resume",
     )
     return response.choices[0].message.parsed
