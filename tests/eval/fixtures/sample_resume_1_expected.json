@@ -1,0 +1,12 @@
+{
+  "name": "Jordan Lee",
+  "email": "jordan.lee@example.com",
+  "phone": "+1-555-0100",
+  "skills": ["Python", "SQL", "Docker"],
+  "work_history": [
+    {"title": "Software Engineer", "company": "Acme Corp", "start": "Jan 2021", "end": "Dec 2023"}
+  ],
+  "education": [
+    {"degree": "B.S. Computer Science", "institution": "State University", "start": "2016", "end": "2020"}
+  ]
+}
