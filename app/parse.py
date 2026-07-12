@@ -5,7 +5,7 @@ from pypdf import PdfReader
 
 from app.schemas import ParsedResume
 
-PROMPT_VERSION = "parse-v1"
+PROMPT_VERSION = "parse-v2"
 MODEL = "gpt-4o-mini"  # placeholder — pin after feasibility spike
 
 SYSTEM_PROMPT = (
@@ -13,7 +13,9 @@ SYSTEM_PROMPT = (
     "the resume text below. Never infer, guess, or invent values that are not "
     "stated. If a field is not present, leave it null (or an empty list for "
     "list fields). Do not fabricate dates, companies, degrees, or skills that "
-    "are not written in the source text."
+    "are not written in the source text. Distinguish work_history (paid "
+    "employment with a formal employer) from projects (personal or side "
+    "projects, open-source work, or portfolio entries with no employer)."
 )
 
 
