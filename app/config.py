@@ -13,6 +13,11 @@ class Settings(BaseSettings):
 
     database_url: str
 
+    adzuna_app_id: str
+    adzuna_api_key: str
+    adzuna_country: str = "au"
+
+
 
 @lru_cache
 def get_settings() -> Settings:
