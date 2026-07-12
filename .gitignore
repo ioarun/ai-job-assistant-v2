@@ -222,3 +222,6 @@ __marimo__/
 
 # YouTube walkthrough / video-facing notes — never committed
 /youtube/
+
+# Interactive code walkthroughs — WIP, not yet ready to commit
+/docs/walkthroughs/
