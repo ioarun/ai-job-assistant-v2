@@ -13,6 +13,10 @@ Backend Engineer — Vertex Software (Jul 2018 - May 2021)
 - Built REST APIs backed by PostgreSQL for a logistics platform.
 - Mentored 2 junior engineers.
 
+PROJECTS
+Open Source Log Aggregator — github.com/sokafor/logagg
+Built a distributed log aggregation tool in Go, processing 50k events/sec.
+
 EDUCATION
 M.S. Computer Science — Imperial College London (2016 - 2018)
 B.S. Software Engineering — University of Lagos (2012 - 2016)
