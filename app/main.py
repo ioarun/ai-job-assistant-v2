@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from langfuse import get_client
 from langfuse.openai import openai  # drop-in: same OpenAI API, auto-traced
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
@@ -28,6 +29,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def _graph_result_to_response(result: dict) -> dict:
