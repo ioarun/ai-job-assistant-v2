@@ -22,7 +22,7 @@ lifecycle. Each phase gets its own README as it completes; the full plan lives i
 | **0 — Ideation & Planning** | PRD, ADRs, diagrams, RFC, eval strategy, roadmap | [README_0.md](README_0.md) | ✅ |
 | **A — Walking skeleton** | FastAPI + traced OpenAI + Langfuse + CI (the rails) | [README_A.md](README_A.md) | ✅ |
 | **B — Resume parse slice** | upload → structured parse → persist, traced; parse eval | [README_B.md](README_B.md) | ✅ |
-| **C — HITL review + minimal UI** | review gate + UI → **MVP complete** | [roadmap](docs/roadmap.md) | ⬜ |
+| **C — HITL review + minimal UI** | review gate + UI → **MVP complete** | [README_C.md](README_C.md) | ✅ |
 | **D — Job search** | Adzuna behind `JobSource` + embeddings/vector match | [roadmap](docs/roadmap.md) | ⬜ |
 | **E — Gap analysis** | match score + honest gaps + upskilling resources | [roadmap](docs/roadmap.md) | ⬜ |
 | **F — Tailored resume + cover letter** | grounded generation (no fabrication) | [roadmap](docs/roadmap.md) | ⬜ |

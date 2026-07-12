@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resume Review</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Resume Review</h1>
+
+<section id="view-upload" class="card">
+  <p>Upload a resume PDF to parse it.</p>
+  <input type="file" id="file-input" accept="application/pdf">
+  <div style="margin-top: 14px;">
+    <button id="upload-btn">Upload &amp; Parse</button>
+  </div>
+  <p class="error hidden" id="upload-error"></p>
+</section>
+
+<section id="view-review" class="card hidden">
+  <span class="status">Awaiting review</span>
+  <div id="parsed-fields"></div>
+  <div style="margin-top: 18px;">
+    <button id="approve-btn">Approve</button>
+  </div>
+  <div style="margin-top: 18px;">
+    <label for="corrections-input"><strong>Not quite right?</strong> Describe what to fix:</label>
+    <textarea id="corrections-input" placeholder="e.g. the second job's dates are wrong, add my LinkedIn"></textarea>
+    <button id="corrections-btn">Send Corrections</button>
+  </div>
+</section>
+
+<section id="view-approved" class="card hidden">
+  <span class="status">Approved</span>
+  <div id="approved-fields"></div>
+  <div style="margin-top: 18px;">
+    <button id="reset-btn">Review Another Resume</button>
+  </div>
+</section>
+
+<script>
+const API_BASE = "http://localhost:8000";
+let resumeId = null;
+
+const viewUpload = document.getElementById("view-upload");
+const viewReview = document.getElementById("view-review");
+const viewApproved = document.getElementById("view-approved");
+
+function showView(view) {
+  [viewUpload, viewReview, viewApproved].forEach(v => v.classList.add("hidden"));
+  view.classList.remove("hidden");
+}
+
+function setButtonLoading(button, isLoading, loadingLabel, originalLabel) {
+  button.disabled = isLoading;
+  button.innerHTML = isLoading
+    ? `<span class="spinner"></span>${loadingLabel}`
+    : originalLabel;
+}
+
+function renderParsed(container, parsed) {
+  const esc = (s) => (s ?? "").toString();
+  let html = "";
+  html += field("Name", parsed.name);
+  html += field("Email", parsed.email);
+  html += field("Phone", parsed.phone);
+  html += field("Skills", (parsed.skills || []).join(", "));
+
+  html += `<div class="field"><span class="label">Work History</span>`;
+  (parsed.work_history || []).forEach(w => {
+    html += `<div class="entry"><strong>${esc(w.title)}</strong> — ${esc(w.company)}<br>
+      <span class="label">${esc(w.start)} – ${esc(w.end)}</span></div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="field"><span class="label">Projects</span>`;
+  (parsed.projects || []).forEach(p => {
+    const link = p.url ? ` — <a href="https://${esc(p.url)}" target="_blank" rel="noopener">${esc(p.url)}</a>` : "";
+    const highlights = (p.highlights || []).map(h => `<li>${esc(h)}</li>`).join("");
+    html += `<div class="entry"><strong>${esc(p.name)}</strong>${link}
+      ${highlights ? `<ul>${highlights}</ul>` : ""}</div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="field"><span class="label">Education</span>`;
+  (parsed.education || []).forEach(e => {
+    html += `<div class="entry"><strong>${esc(e.degree)}</strong> — ${esc(e.institution)}<br>
+      <span class="label">${esc(e.start)} – ${esc(e.end)}</span></div>`;
+  });
+  html += `</div>`;
+
+  container.innerHTML = html;
+
+  function field(label, value) {
+    return `<div class="field"><span class="label">${label}</span><div class="value">${esc(value)}</div></div>`;
+  }
+}
+
+
+document.getElementById("upload-btn").addEventListener("click", async () => {
+  const button = document.getElementById("upload-btn");
+  const fileInput = document.getElementById("file-input");
+  const errorEl = document.getElementById("upload-error");
+  errorEl.classList.add("hidden");
+
+  if (!fileInput.files.length) {
+    errorEl.textContent = "Choose a PDF first.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  setButtonLoading(button, true, "Uploading &amp; parsing… (a few seconds)", "Upload &amp; Parse");
+  try {
+    const res = await fetch(`${API_BASE}/resumes`, { method: "POST", body: formData });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errorEl.textContent = data.detail || "Upload failed.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    resumeId = data.resume_id;
+    renderParsed(document.getElementById("parsed-fields"), data.parsed);
+    showView(viewReview);
+  } catch (err) {
+    errorEl.textContent = "Could not reach the server. Is it running?";
+    errorEl.classList.remove("hidden");
+  } finally {
+    setButtonLoading(button, false, "", "Upload &amp; Parse");
+  }
+});
+
+document.getElementById("approve-btn").addEventListener("click", async () => {
+  const button = document.getElementById("approve-btn");
+  setButtonLoading(button, true, "Approving…", "Approve");
+  try {
+    const res = await fetch(`${API_BASE}/resumes/${resumeId}/parse/approve`, { method: "POST" });
+    const data = await res.json();
+    renderParsed(document.getElementById("approved-fields"), data.parsed);
+    showView(viewApproved);
+  } finally {
+    setButtonLoading(button, false, "", "Approve");
+  }
+});
+
+document.getElementById("corrections-btn").addEventListener("click", async () => {
+  const button = document.getElementById("corrections-btn");
+  const corrections = document.getElementById("corrections-input").value.trim();
+  if (!corrections) return;
+
+  setButtonLoading(button, true, "Re-parsing with your notes… (a few seconds)", "Send Corrections");
+  try {
+    const res = await fetch(`${API_BASE}/resumes/${resumeId}/parse/corrections`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ corrections }),
+    });
+    const data = await res.json();
+    renderParsed(document.getElementById("parsed-fields"), data.parsed);
+    document.getElementById("corrections-input").value = "";
+  } finally {
+    setButtonLoading(button, false, "", "Send Corrections");
+  }
+});
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+  resumeId = null;
+  document.getElementById("file-input").value = "";
+  showView(viewUpload);
+});
+</script>
+</body>
+</html>

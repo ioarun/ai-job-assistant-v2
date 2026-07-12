@@ -6,6 +6,7 @@
   "work_history": [
     {"title": "Software Engineer", "company": "Acme Corp", "start": "Jan 2021", "end": "Dec 2023"}
   ],
+  "projects": [],
   "education": [
     {"degree": "B.S. Computer Science", "institution": "State University", "start": "2016", "end": "2020"}
   ]

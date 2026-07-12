@@ -5,9 +5,9 @@
 Scores app.parse.parse_resume() against every fixture pair in fixtures/
 (`<name>.txt` + `<name>_expected.json`): normalized exact match on scalar
 fields, precision/recall on skills, per-entry match on work history /
-education, and a hard zero-fabrication gate on skills (every extracted skill
-must appear verbatim in the source text — the base strict-matching approach;
-semantic/RAG-augmented checking is deferred to B2).
+projects / education, and a hard zero-fabrication gate on skills (every
+extracted skill must appear verbatim in the source text — the base
+strict-matching approach; semantic/RAG-augmented checking is deferred to B2).
 """
 
 import json
@@ -81,6 +81,10 @@ def score_fixture(name: str, text: str, expected: dict) -> dict:
     work_matched, work_total = entry_match_rate(
         parsed.work_history, expected["work_history"], work_fields
     )
+    project_fields = ["name", "url"]
+    project_matched, project_total = entry_match_rate(
+        parsed.projects, expected["projects"], project_fields
+    )
     edu_fields = ["degree", "institution", "start", "end"]
     edu_matched, edu_total = entry_match_rate(
         parsed.education, expected["education"], edu_fields
@@ -90,6 +94,7 @@ def score_fixture(name: str, text: str, expected: dict) -> dict:
     # Guard against zero-entry fixtures (e.g. no education section) so we
     # don't divide by zero — treat "expected none, got none" as a full match.
     work_score = (work_matched / work_total) if work_total else 1.0
+    project_score = (project_matched / project_total) if project_total else 1.0
     edu_score = (edu_matched / edu_total) if edu_total else 1.0
 
     scores = [
@@ -97,6 +102,7 @@ def score_fixture(name: str, text: str, expected: dict) -> dict:
         skills_precision,
         skills_recall,
         work_score,
+        project_score,
         edu_score,
     ]
     overall_accuracy = sum(scores) / len(scores)
@@ -107,6 +113,7 @@ def score_fixture(name: str, text: str, expected: dict) -> dict:
         "skills_precision": skills_precision,
         "skills_recall": skills_recall,
         "work": f"{work_matched}/{work_total}",
+        "projects": f"{project_matched}/{project_total}",
         "education": f"{edu_matched}/{edu_total}",
         "fabricated": fabricated,
         "accuracy": overall_accuracy,
@@ -137,7 +144,7 @@ def main() -> int:
         print(
             f"[{r['name']}] scalar={r['scalar']} "
             f"skills_p={r['skills_precision']:.2f} skills_r={r['skills_recall']:.2f} "
-            f"work={r['work']} education={r['education']} "
+            f"work={r['work']} projects={r['projects']} education={r['education']} "
             f"fabricated={r['fabricated']} accuracy={r['accuracy']:.2%}"
         )
 
