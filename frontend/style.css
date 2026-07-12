@@ -1,0 +1,67 @@
+:root { color-scheme: light dark; }
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 640px;
+  margin: 48px auto;
+  padding: 0 20px;
+  line-height: 1.5;
+}
+h1 { font-size: 20px; }
+.card {
+  border: 1px solid #8888;
+  border-radius: 8px;
+  padding: 24px;
+}
+.field { margin-bottom: 14px; }
+.field .label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.65;
+}
+.field .value { font-size: 15px; }
+.entry {
+  border-left: 3px solid #8888;
+  padding-left: 12px;
+  margin: 10px 0;
+}
+button {
+  font-size: 14px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+textarea {
+  width: 100%;
+  min-height: 70px;
+  font-family: inherit;
+  font-size: 14px;
+  margin: 10px 0;
+}
+.status {
+  display: inline-block;
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #8882;
+  margin-bottom: 16px;
+}
+.error { color: #c0392b; margin-top: 12px; }
+.hidden { display: none; }
+
+.spinner {
+  display: inline-block;
+  width: 11px; height: 11px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: -1px;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 1.5s; }
+}
