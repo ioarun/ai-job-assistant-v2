@@ -32,3 +32,26 @@ class ParsedResume(BaseModel):
     work_history: list[WorkEntry] = []
     projects: list[ProjectEntry] = []
     education: list[EducationEntry] = []
+
+class JobPosting(BaseModel):
+    title: str
+    company: str | None = None
+    location: str | None = None
+    description: str | None = None
+    url: str | None = None
+    salary_min: float | None = None
+    salary_max: float | None = None
+
+class JobFitScore(BaseModel):
+    job_index: int
+    score: int
+    reason: str
+
+class JobRankingResult(BaseModel):
+    scores: list[JobFitScore]
+
+
+class RankedJob(BaseModel):
+    job: JobPosting
+    score: int
+    reason: str
