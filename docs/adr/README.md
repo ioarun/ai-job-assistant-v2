@@ -24,3 +24,4 @@ Consequences).
 | [0013](0013-separate-compose-stacks.md) | Separate compose stacks for app and Langfuse; app on host (refines ADR-0006) | Accepted |
 | [0014](0014-job-ranking-llm-reranker.md) | Job ranking via LLM reranker; retrieve→rerank at scale (defers pgvector) | Accepted |
 | [0015](0015-reject-rag-augmented-parsing.md) | Reject RAG-augmented parsing for Phase B fabrication detection | Accepted |
+| [0016](0016-resume-identity-dedup-deferred.md) | Resume identity & deduplication | Proposed (deferred) |
