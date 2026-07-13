@@ -60,6 +60,10 @@
   <span class="status">Job Picked</span>
   <div id="picked-job-fields"></div>
   <div style="margin-top: 18px;">
+    <button id="gap-analysis-btn">Run Gap Analysis</button>
+  </div>
+  <div id="gap-report-fields" style="margin-top: 18px;"></div>
+  <div style="margin-top: 18px;">
     <button id="search-again-btn">Search Again</button>
     <button id="start-over-btn">Start Over</button>
   </div>
@@ -68,6 +72,7 @@
 <script>
 const API_BASE = "http://localhost:8000";
 let resumeId = null;
+let jobPickId = null;
 
 const viewUpload = document.getElementById("view-upload");
 const viewReview = document.getElementById("view-review");
@@ -181,8 +186,29 @@ async function pickJob(ranked) {
     body: JSON.stringify({ resume_id: resumeId, picked: ranked }),
   });
   const data = await res.json();
+  jobPickId = data.job_pick_id;
+  document.getElementById("gap-report-fields").innerHTML = "";
   renderPickedJob(document.getElementById("picked-job-fields"), ranked);
   showView(viewJobPicked);
+}
+
+function renderGapReport(container, report) {
+  const matched = (report.matched_skills || []).map(s => `<li>${esc(s)}</li>`).join("");
+  const missing = (report.missing_skills || []).map(s => `<li>${esc(s)}</li>`).join("");
+  container.innerHTML = `
+    <div class="field">
+      <span class="label">Match Score</span>
+      <div class="value">${esc(report.match_score)} / 100</div>
+    </div>
+    <div class="field">
+      <span class="label">Matched Skills</span>
+      <ul>${matched}</ul>
+    </div>
+    <div class="field">
+      <span class="label">Missing Skills</span>
+      <ul>${missing}</ul>
+    </div>
+  `;
 }
 
 document.getElementById("upload-btn").addEventListener("click", async () => {
@@ -299,6 +325,18 @@ document.getElementById("search-jobs-btn").addEventListener("click", async () =>
     errorEl.classList.remove("hidden");
   } finally {
     setButtonLoading(button, false, "", "Search Jobs");
+  }
+});
+
+document.getElementById("gap-analysis-btn").addEventListener("click", async () => {
+  const button = document.getElementById("gap-analysis-btn");
+  setButtonLoading(button, true, "Analyzing… (a few seconds)", "Run Gap Analysis");
+  try {
+    const res = await fetch(`${API_BASE}/jobs/${jobPickId}/gap-analysis`, { method: "POST" });
+    const data = await res.json();
+    renderGapReport(document.getElementById("gap-report-fields"), data.gap_report);
+  } finally {
+    setButtonLoading(button, false, "", "Run Gap Analysis");
   }
 });
 
