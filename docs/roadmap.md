@@ -125,15 +125,15 @@ relevance measured against precision@10 ≥70% (eval-strategy §6).
 
 ## Phase E — Gap analysis
 
-**Goal:** for the selected job, compute a match score + honest skill gaps, and suggest
-upskilling resources.
+**Goal:** for the selected job, compute a match score + honest skill gaps.
 
-**Scope — in:** per-job gap analysis (flow.md stage 3); upskilling suggestions (RAG
-over a curated resource catalog to avoid hallucinated courses/links). **Out:**
-tailoring (Phase F).
+**Scope — in:** per-job gap analysis (flow.md stage 3) — a single Structured-Outputs
+call returning `GapReport` (match score, matched skills, missing skills). **Out:**
+tailoring (Phase F); upskilling resource suggestions (ADR-0017 — removed from project
+scope entirely, not merely deferred to a later phase).
 
 **Exit criteria:** gaps for a resume×job pair meet the precision/recall bar
-([OPEN] — define, PRD §6); resource suggestions are real (retrieved, not invented).
+([OPEN] — define, PRD §6).
 
 **Eval / Responsible-AI note:** no automated decision *about the candidate* — gaps are
 advisory (PRD §7).
