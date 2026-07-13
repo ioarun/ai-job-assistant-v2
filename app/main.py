@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import get_db
+from app.gap_analysis import analyze_gap
 from app.graph import build_graph
 from app.job_source import AdzunaJobSource
 from app.models import JobPick, ParseRun, Resume
@@ -186,6 +187,31 @@ async def pick_job(body: JobPickRequest, db: AsyncSession = Depends(get_db)):
     await db.commit()
 
     return {"resume_id": body.resume_id, "job_pick_id": job_pick.id}
+
+
+@app.post("/jobs/{job_pick_id}/gap-analysis")
+async def gap_analysis(job_pick_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(JobPick).where(JobPick.id == job_pick_id))
+    job_pick = result.scalar_one_or_none()
+    if job_pick is None:
+        raise HTTPException(status_code=404, detail="Job pick not found")
+
+    result = await db.execute(
+        select(ParseRun)
+        .where(ParseRun.resume_id == job_pick.resume_id, ParseRun.status == "approved")
+        .order_by(ParseRun.id.desc())
+        .limit(1)
+    )
+    parse_run = result.scalar_one_or_none()
+    if parse_run is None:
+        raise HTTPException(
+            status_code=400, detail="No approved resume found for this job pick"
+        )
+
+    resume = ParsedResume(**parse_run.parsed)
+    report = analyze_gap(resume, job_pick.description or "")
+
+    return {"job_pick_id": job_pick_id, "gap_report": report.model_dump()}
 
 
 
