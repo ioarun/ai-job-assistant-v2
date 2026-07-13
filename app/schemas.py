@@ -55,3 +55,9 @@ class RankedJob(BaseModel):
     job: JobPosting
     score: int
     reason: str
+
+
+class GapReport(BaseModel):
+    match_score: int
+    matched_skills: list[str]
+    missing_skills: list[str]
