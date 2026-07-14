@@ -61,3 +61,18 @@ class GapReport(BaseModel):
     match_score: int
     matched_skills: list[str]
     missing_skills: list[str]
+
+
+class TailoredResume(BaseModel):
+    content: str
+    emphasized_skills: list[str] = []
+
+
+class CoverLetter(BaseModel):
+    content: str
+    emphasized_skills: list[str] = []
+
+
+class TailorResult(BaseModel):
+    tailored_resume: TailoredResume
+    cover_letter: CoverLetter

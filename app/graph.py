@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_sessionmaker
-from app.models import ParseRun
+from app.models import ParseRun, Resume
 from app.parse import extract_text, parse_resume
 
 
@@ -47,6 +47,10 @@ async def parse_node(state: ReviewState) -> dict:
         parse_run = await _get_latest_parse_run(session, state["resume_id"])
         parse_run.status = "awaiting_review"
         parse_run.parsed = parsed_dict
+
+        resume = await session.get(Resume, state["resume_id"])
+        resume.raw_text = state["text"]
+
         await session.commit()
 
     return {"parsed": parsed_dict, "status": "awaiting_review"}

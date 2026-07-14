@@ -26,3 +26,4 @@ Consequences).
 | [0015](0015-reject-rag-augmented-parsing.md) | Reject RAG-augmented parsing for Phase B fabrication detection | Accepted |
 | [0016](0016-resume-identity-dedup-deferred.md) | Resume identity & deduplication | Proposed (deferred) |
 | [0017](0017-defer-upskilling-catalog.md) | Defer upskilling resource catalog out of project scope | Accepted |
+| [0018](0018-reject-rag-for-tailoring.md) | Reject RAG for Phase F tailored-generation grounding | Accepted |

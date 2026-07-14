@@ -1,0 +1,33 @@
+{
+  "name": "Jordan Lee",
+  "email": "jordan.lee@example.com",
+  "phone": "555-0199",
+  "skills": ["Python", "SQL", "Docker", "FastAPI", "PostgreSQL", "Git"],
+  "work_history": [
+    {
+      "title": "Backend Engineer",
+      "company": "Riverstone Analytics",
+      "start": "2022-03",
+      "end": "2026-01",
+      "highlights": [
+        "Built and maintained REST APIs in FastAPI serving internal reporting tools",
+        "Designed PostgreSQL schemas for a multi-tenant analytics platform",
+        "Containerized services with Docker for consistent local and CI environments"
+      ]
+    },
+    {
+      "title": "Junior Developer",
+      "company": "Oakbridge Software",
+      "start": "2020-06",
+      "end": "2022-02",
+      "highlights": [
+        "Wrote SQL queries and ETL scripts to migrate legacy customer data",
+        "Collaborated with QA to fix defects reported in production"
+      ]
+    }
+  ],
+  "projects": [],
+  "education": [
+    {"degree": "B.S. Computer Science", "institution": "Lakeside University", "start": "2016", "end": "2020"}
+  ]
+}

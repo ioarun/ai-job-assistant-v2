@@ -94,14 +94,14 @@ uv run pytest tests/
 | Gap report (`match_score`/`matched_skills`/`missing_skills`) returned for a resume×job pair | ✅ |
 | Precision/recall ≥80% on matched + missing skills, zero fabrication (eval-strategy §6) | ✅ both fixtures pass; `tests/eval/eval_gap_analysis.py` |
 | Frontend visually verified in a browser | ✅ verified end-to-end 2026-07-14 |
-| CI green (`ruff check .` on the whole repo) | ⬜ **open** — not run this session (no computer access); needs a confirmed pass |
+| CI green (`ruff check .` on the whole repo) | ✅ confirmed 2026-07-15 |
 
 ## Notes
 
 - Model is still **`gpt-4o-mini`** as a placeholder throughout — pinning remains open,
   non-blocking.
-- GitHub issue #8 closed 2026-07-14, with the one open exit-criteria item (whole-repo
-  lint check) called out explicitly in the closing comment.
+- GitHub issue #8 closed 2026-07-14. Its one open exit-criteria item (whole-repo lint
+  check) was confirmed passing 2026-07-15.
 - `pytest tests/` confirmed the eval scripts (all three now) are not collected —
   `tests/eval/` stays outside default test discovery by convention, matching Phase B/D.
 

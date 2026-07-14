@@ -1,0 +1,33 @@
+{
+  "name": "Morgan Diaz",
+  "email": "morgan.diaz@example.com",
+  "phone": "555-0233",
+  "skills": ["SQL", "Python", "Tableau", "Excel", "A/B testing"],
+  "work_history": [
+    {
+      "title": "Data Analyst",
+      "company": "Northlight Media",
+      "start": "2023-01",
+      "end": "2026-02",
+      "highlights": [
+        "Built weekly SQL reports on campaign performance for the marketing team",
+        "Designed Tableau dashboards used by leadership to track KPIs",
+        "Ran A/B tests on email subject lines, improving open rates by double digits"
+      ]
+    },
+    {
+      "title": "Marketing Coordinator",
+      "company": "Fernwood Agency",
+      "start": "2021-08",
+      "end": "2022-12",
+      "highlights": [
+        "Assisted in tracking campaign spend across channels in Excel",
+        "Compiled monthly performance summaries for clients"
+      ]
+    }
+  ],
+  "projects": [],
+  "education": [
+    {"degree": "B.A. Economics", "institution": "Brightwater College", "start": "2017", "end": "2021"}
+  ]
+}

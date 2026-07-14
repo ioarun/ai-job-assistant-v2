@@ -24,8 +24,8 @@ lifecycle. Each phase gets its own README as it completes; the full plan lives i
 | **B — Resume parse slice** | upload → structured parse → persist, traced; parse eval | [README_B.md](README_B.md) | ✅ |
 | **C — HITL review + minimal UI** | review gate + UI → **MVP complete** | [README_C.md](README_C.md) | ✅ |
 | **D — Job search** | Adzuna behind `JobSource` + LLM reranker | [README_D.md](README_D.md) | 🟡 |
-| **E — Gap analysis** | match score + honest skill gaps | [README_E.md](README_E.md) | 🟡 |
-| **F — Tailored resume + cover letter** | grounded generation (no fabrication) | [roadmap](docs/roadmap.md) | ⬜ |
+| **E — Gap analysis** | match score + honest skill gaps | [README_E.md](README_E.md) | ✅ |
+| **F — Tailored resume + cover letter** | grounded generation (no fabrication) | [README_F.md](README_F.md) | ✅ |
 | **G — Advanced techniques** | multi-agent orchestration, better RAG, MCP | [roadmap](docs/roadmap.md) | ⬜ |
 | **H — Auto-apply + productionization** | human-gated submit + deploy/monitoring | [roadmap](docs/roadmap.md) | ⬜ |
 
