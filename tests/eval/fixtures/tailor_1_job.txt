@@ -1,0 +1,13 @@
+Backend Engineer — Meridian Health Tech
+
+We're looking for a backend engineer to help build APIs for our patient-scheduling
+platform. You'll work primarily in Python and FastAPI, design PostgreSQL schemas, and
+containerize services with Docker.
+
+Required:
+- Python
+- FastAPI
+- PostgreSQL
+- Docker
+
+Nice to have: SQL, experience with healthcare data.

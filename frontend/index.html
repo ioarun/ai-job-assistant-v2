@@ -61,11 +61,28 @@
   <div id="picked-job-fields"></div>
   <div style="margin-top: 18px;">
     <button id="gap-analysis-btn">Run Gap Analysis</button>
+    <button id="generate-tailor-btn">Generate Tailored Docs</button>
   </div>
   <div id="gap-report-fields" style="margin-top: 18px;"></div>
   <div style="margin-top: 18px;">
     <button id="search-again-btn">Search Again</button>
     <button id="start-over-btn">Start Over</button>
+  </div>
+</section>
+
+<section id="view-tailor-review" class="card hidden">
+  <span class="status" id="tailor-status">Awaiting review</span>
+  <div id="tailor-fields"></div>
+  <div style="margin-top: 18px;">
+    <button id="tailor-approve-btn">Approve</button>
+  </div>
+  <div style="margin-top: 18px;">
+    <label for="tailor-corrections-input"><strong>Not quite right?</strong> Describe what to fix:</label>
+    <textarea id="tailor-corrections-input" placeholder="e.g. emphasize the Python project more, tone down the cover letter"></textarea>
+    <button id="tailor-corrections-btn">Send Corrections</button>
+  </div>
+  <div style="margin-top: 18px;">
+    <button id="tailor-back-btn">Back to Job</button>
   </div>
 </section>
 
@@ -79,8 +96,9 @@ const viewReview = document.getElementById("view-review");
 const viewApproved = document.getElementById("view-approved");
 const viewJobSearch = document.getElementById("view-job-search");
 const viewJobPicked = document.getElementById("view-job-picked");
+const viewTailorReview = document.getElementById("view-tailor-review");
 
-const allViews = [viewUpload, viewReview, viewApproved, viewJobSearch, viewJobPicked];
+const allViews = [viewUpload, viewReview, viewApproved, viewJobSearch, viewJobPicked, viewTailorReview];
 
 function showView(view) {
   allViews.forEach(v => v.classList.add("hidden"));
@@ -207,6 +225,19 @@ function renderGapReport(container, report) {
     <div class="field">
       <span class="label">Missing Skills</span>
       <ul>${missing}</ul>
+    </div>
+  `;
+}
+
+function renderTailorDocs(container, tailoredResume, coverLetter) {
+  container.innerHTML = `
+    <div class="field">
+      <span class="label">Tailored Resume</span>
+      <pre class="value">${esc(tailoredResume.content)}</pre>
+    </div>
+    <div class="field">
+      <span class="label">Cover Letter</span>
+      <pre class="value">${esc(coverLetter.content)}</pre>
     </div>
   `;
 }
@@ -338,6 +369,59 @@ document.getElementById("gap-analysis-btn").addEventListener("click", async () =
   } finally {
     setButtonLoading(button, false, "", "Run Gap Analysis");
   }
+});
+
+document.getElementById("generate-tailor-btn").addEventListener("click", async () => {
+  const button = document.getElementById("generate-tailor-btn");
+  setButtonLoading(button, true, "Generating… (a few seconds)", "Generate Tailored Docs");
+  try {
+    const res = await fetch(`${API_BASE}/jobs/${jobPickId}/tailor`, { method: "POST" });
+    const data = await res.json();
+    document.getElementById("tailor-status").textContent =
+      data.status === "awaiting_review" ? "Awaiting review" : data.status;
+    renderTailorDocs(document.getElementById("tailor-fields"), data.tailored_resume, data.cover_letter);
+    showView(viewTailorReview);
+  } finally {
+    setButtonLoading(button, false, "", "Generate Tailored Docs");
+  }
+});
+
+document.getElementById("tailor-approve-btn").addEventListener("click", async () => {
+  const button = document.getElementById("tailor-approve-btn");
+  setButtonLoading(button, true, "Approving…", "Approve");
+  try {
+    const res = await fetch(`${API_BASE}/jobs/${jobPickId}/tailor/approve`, { method: "POST" });
+    const data = await res.json();
+    document.getElementById("tailor-status").textContent =
+      data.status === "approved" ? "Approved" : data.status;
+    renderTailorDocs(document.getElementById("tailor-fields"), data.tailored_resume, data.cover_letter);
+  } finally {
+    setButtonLoading(button, false, "", "Approve");
+  }
+});
+
+document.getElementById("tailor-corrections-btn").addEventListener("click", async () => {
+  const button = document.getElementById("tailor-corrections-btn");
+  const corrections = document.getElementById("tailor-corrections-input").value.trim();
+  if (!corrections) return;
+
+  setButtonLoading(button, true, "Regenerating with your notes… (a few seconds)", "Send Corrections");
+  try {
+    const res = await fetch(`${API_BASE}/jobs/${jobPickId}/tailor/corrections`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ corrections }),
+    });
+    const data = await res.json();
+    renderTailorDocs(document.getElementById("tailor-fields"), data.tailored_resume, data.cover_letter);
+    document.getElementById("tailor-corrections-input").value = "";
+  } finally {
+    setButtonLoading(button, false, "", "Send Corrections");
+  }
+});
+
+document.getElementById("tailor-back-btn").addEventListener("click", () => {
+  showView(viewJobPicked);
 });
 
 document.getElementById("search-again-btn").addEventListener("click", () => {

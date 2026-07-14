@@ -1,0 +1,22 @@
+Morgan Diaz
+morgan.diaz@example.com | 555-0233
+
+SUMMARY
+Data analyst with 3 years of experience turning marketing data into actionable
+insights.
+
+SKILLS
+SQL, Python, Tableau, Excel, A/B testing
+
+EXPERIENCE
+Data Analyst, Northlight Media (2023-01 - 2026-02)
+- Built weekly SQL reports on campaign performance for the marketing team
+- Designed Tableau dashboards used by leadership to track KPIs
+- Ran A/B tests on email subject lines, improving open rates by double digits
+
+Marketing Coordinator, Fernwood Agency (2021-08 - 2022-12)
+- Assisted in tracking campaign spend across channels in Excel
+- Compiled monthly performance summaries for clients
+
+EDUCATION
+B.A. Economics, Brightwater College (2017 - 2021)

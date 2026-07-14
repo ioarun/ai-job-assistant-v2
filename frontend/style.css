@@ -20,6 +20,11 @@ h1 { font-size: 20px; }
   opacity: 0.65;
 }
 .field .value { font-size: 15px; }
+pre.value {
+  font-family: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
 .entry {
   border-left: 3px solid #8888;
   padding-left: 12px;

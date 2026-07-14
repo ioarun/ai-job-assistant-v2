@@ -1,0 +1,12 @@
+Marketing Data Analyst — Coastal Retail Group
+
+We're hiring a data analyst to support our marketing team. You'll write SQL queries
+against our campaign database, build Tableau dashboards for leadership, and help design
+A/B tests for our email program.
+
+Required:
+- SQL
+- Tableau
+- A/B testing
+
+Nice to have: Python, experience with retail/e-commerce data.

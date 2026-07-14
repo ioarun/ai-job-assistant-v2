@@ -15,10 +15,13 @@ from app.db import get_db
 from app.gap_analysis import analyze_gap
 from app.graph import build_graph
 from app.job_source import AdzunaJobSource
-from app.models import JobPick, ParseRun, Resume
+from app.models import JobPick, ParseRun, Resume, TailorRun
 from app.parse import MODEL, PROMPT_VERSION
 from app.rank import rank_jobs
 from app.schemas import ParsedResume, RankedJob
+from app.tailor import MODEL as TAILOR_MODEL
+from app.tailor import PROMPT_VERSION as TAILOR_PROMPT_VERSION
+from app.tailor_graph import build_tailor_graph
 
 
 @asynccontextmanager
@@ -29,6 +32,7 @@ async def lifespan(app: FastAPI):
     async with AsyncPostgresSaver.from_conn_string(psycopg_url) as checkpointer:
         await checkpointer.setup()
         app.state.graph = build_graph(checkpointer)
+        app.state.tailor_graph = build_tailor_graph(checkpointer)
         yield
 
 
@@ -213,6 +217,124 @@ async def gap_analysis(job_pick_id: int, db: AsyncSession = Depends(get_db)):
 
     return {"job_pick_id": job_pick_id, "gap_report": report.model_dump()}
 
+
+def _tailor_graph_result_to_response(result: dict) -> dict:
+    if "__interrupt__" in result:
+        payload = result["__interrupt__"][0].value
+        return {
+            "status": "awaiting_review",
+            "tailored_resume": payload["tailored_resume"],
+            "cover_letter": payload["cover_letter"],
+        }
+    return {
+        "status": result.get("status"),
+        "tailored_resume": result.get("tailored_resume"),
+        "cover_letter": result.get("cover_letter"),
+    }
+
+
+@app.post("/jobs/{job_pick_id}/tailor")
+async def tailor_job(job_pick_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(JobPick).where(JobPick.id == job_pick_id))
+    job_pick = result.scalar_one_or_none()
+    if job_pick is None:
+        raise HTTPException(status_code=404, detail="Job pick not found")
+
+    result = await db.execute(
+        select(ParseRun)
+        .where(ParseRun.resume_id == job_pick.resume_id, ParseRun.status == "approved")
+        .order_by(ParseRun.id.desc())
+        .limit(1)
+    )
+    parse_run = result.scalar_one_or_none()
+    if parse_run is None:
+        raise HTTPException(
+            status_code=400, detail="Resume must be approved before tailoring"
+        )
+
+    resume = await db.get(Resume, job_pick.resume_id)
+    if resume is None or resume.raw_text is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Raw resume text not available; re-upload resume",
+        )
+
+    tailor_run = TailorRun(
+        job_pick_id=job_pick_id,
+        status="pending",
+        model=TAILOR_MODEL,
+        prompt_version=TAILOR_PROMPT_VERSION,
+    )
+    db.add(tailor_run)
+    await db.commit()
+
+    config = {"configurable": {"thread_id": f"tailor:{job_pick_id}"}}
+    try:
+        result = await app.state.tailor_graph.ainvoke(
+            {
+                "job_pick_id": job_pick_id,
+                "resume_id": job_pick.resume_id,
+                "resume_text": resume.raw_text,
+                "parsed": parse_run.parsed,
+                "job_description": job_pick.description or "",
+                "tailored_resume": None,
+                "cover_letter": None,
+                "status": "pending",
+                "corrections": None,
+            },
+            config=config,
+        )
+    except Exception as e:
+        tailor_run.status = "failed"
+        tailor_run.error = str(e)
+        await db.commit()
+        raise HTTPException(status_code=422, detail=str(e)) from e
+
+    return {"job_pick_id": job_pick_id, **_tailor_graph_result_to_response(result)}
+
+
+@app.get("/jobs/{job_pick_id}/tailor")
+async def get_tailor(job_pick_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(TailorRun)
+        .where(TailorRun.job_pick_id == job_pick_id)
+        .order_by(TailorRun.id.desc())
+        .limit(1)
+    )
+    tailor_run = result.scalar_one_or_none()
+    if tailor_run is None:
+        raise HTTPException(status_code=404, detail="Tailor run not found")
+
+    return {
+        "status": tailor_run.status,
+        "tailored_resume": {
+            "content": tailor_run.resume_content,
+            "emphasized_skills": tailor_run.resume_emphasized_skills,
+        },
+        "cover_letter": {
+            "content": tailor_run.cover_letter_content,
+            "emphasized_skills": tailor_run.cover_letter_emphasized_skills,
+        },
+    }
+
+
+@app.post("/jobs/{job_pick_id}/tailor/approve")
+async def approve_tailor(job_pick_id: int):
+    config = {"configurable": {"thread_id": f"tailor:{job_pick_id}"}}
+    result = await app.state.tailor_graph.ainvoke(
+        Command(resume={"action": "approve"}), config=config
+    )
+    return {"job_pick_id": job_pick_id, **_tailor_graph_result_to_response(result)}
+
+
+@app.post("/jobs/{job_pick_id}/tailor/corrections")
+async def submit_tailor_corrections(job_pick_id: int, body: CorrectionsRequest):
+    config = {"configurable": {"thread_id": f"tailor:{job_pick_id}"}}
+    result = await app.state.tailor_graph.ainvoke(
+        Command(resume={"action": "revise", "corrections": body.corrections}),
+        config=config,
+    )
+    return {"job_pick_id": job_pick_id, **_tailor_graph_result_to_response(result)}
 
 
 @app.get("/hello")

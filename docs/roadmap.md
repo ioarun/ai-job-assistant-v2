@@ -146,16 +146,18 @@ advisory (PRD §7).
 **Goal:** generate a role-tailored resume and cover letter that improve fit **without
 fabricating anything**.
 
-**Scope — in:** grounded generation — **RAG over the applicant's own corpus** (past
-resumes/projects) so output draws only on true facts; review/approve HITL gate
-(flow.md gate 3); export format [OPEN — PRD §7]. **Out:** auto-apply.
+**Scope — in:** grounded generation — the full raw resume text passed directly into the
+generation prompt (no vector store; ADR-0018) so output draws only on true facts;
+review/approve HITL gate (flow.md gate 3); export format: plain text/Markdown, returned
+as a string field (PDF templating deferred). **Out:** auto-apply.
 
 **Exit criteria:** tailored resume covers ≥80% of *has*-skills with **zero
 fabrication** (hard gate) and no contradiction with the source; cover letter
 consistent (eval-strategy §6).
 
-**Eval / Responsible-AI note:** the core "tailoring ≠ fabrication" constraint; RAG is
-the *mechanism* enforcing it.
+**Eval / Responsible-AI note:** the core "tailoring ≠ fabrication" constraint; the
+no-fabrication hard gate (`tests/eval/eval_tailor.py` — a code-based skill-coverage
+check plus a narrowly-scoped coded LLM-judge) is the mechanism enforcing it, not RAG.
 
 ---
 
@@ -198,7 +200,6 @@ human confirm before any submission, online evals + human review queue.
 - [OPEN] CI provider (assumed GitHub Actions).
 - [OPEN] When exactly the vector store is introduced (Phase D) and which (pgvector vs.
   dedicated) → candidate ADR.
-- [OPEN] Tailored-resume export format (PRD §7).
 - [OPEN] Auto-apply mechanism + deployment target (PRD §7).
 - [OPEN] Per-technique exit criteria for Phase G.
 

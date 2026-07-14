@@ -139,6 +139,16 @@ These reuse the same harness (dataset → grader → CI gate); numbers from PRD 
 | **Tailored resume** | LLM-judge + code | **≥ 80%** coverage of *has*-skills; **zero fabrication** (hard); no contradiction with source | grounded against the source resume |
 | **Cover letter** | LLM-judge | consistent with resume+job; **zero fabrication** (hard) | tone/consistency rubric |
 
+**Tailored-resume/cover-letter mechanism** (`tests/eval/eval_tailor.py`): coverage is a
+code-based check — a `has`-skill counts as covered if it's in the model's
+`emphasized_skills` sidecar (a closed-vocabulary list copied verbatim from the parsed
+resume's skills) or appears as a normalized substring in the generated text. Fabrication
+and source-contradiction are both caught by a single, narrowly-scoped coded LLM-judge
+(`judge_fabrication`) that lists any claim in the generated text not grounded in the
+source resume — explicitly instructed that paraphrasing/reordering/summarizing real
+content is not fabrication. No RAG/vector store is used for grounding (ADR-0018);
+generation is grounded directly on the full raw resume text in the prompt.
+
 **Bias / fairness (hiring is high-risk — PRD §7):** as matching/tailoring land, add a
 fairness check that outputs don't vary on protected-characteristic proxies. [OPEN —
 define the check; not needed for the parse-only MVP but flagged early.]
@@ -155,7 +165,9 @@ Out of scope for the MVP; listed so the tracing/dataset design anticipates it.
 - [OPEN] Curated dataset size & exact composition (assumed ~20–30 to start).
 - [OPEN] Dataset storage if not fully in-repo (gitignored local dir vs. Langfuse
   datasets) — driven by the PII constraint.
-- [OPEN] Exact grounding/no-fabrication check method (programmatic vs. LLM-judge mix).
+- [RESOLVED for tailoring] Grounding/no-fabrication check method: code-based skill
+  coverage + a coded LLM-judge (`tests/eval/eval_tailor.py`). Still open for any stage
+  not yet built.
 - [OPEN] Eval tooling graduation point (pytest+fixtures → Langfuse datasets).
 - [OPEN] Judge model + cost budget for LLM-as-judge in later stages.
 - [OPEN] Fairness/bias check definition for the matching/tailoring stages.

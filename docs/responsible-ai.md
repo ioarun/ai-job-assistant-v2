@@ -58,7 +58,7 @@ because they're good practice and keep that door open safely.
 | # | Risk | Likelihood | Impact | Mitigation | Where enforced |
 |---|---|---|---|---|---|
 | R1 | **Regulated-domain misuse** — drifting into automated decisions about candidates / employer-side use | Low (v1) | High | Applicant-side only; advisory outputs; no candidate screening; document posture; re-assess before any employer-side move | This register; flow.md (HITL); roadmap scope |
-| R2 | **Fabrication / hallucination** — invented skills or experience in parse or tailoring | Med | High | **Zero-fabrication hard eval gate**; ground generation in source (parse) and the applicant's own corpus (tailoring, RAG); mandatory human review of tailored output | eval-strategy §4.4 & §6; RFC §6.4; flow.md gates 1 & 3; Phase F |
+| R2 | **Fabrication / hallucination** — invented skills or experience in parse or tailoring | Med | High | **Zero-fabrication hard eval gate**; ground generation directly in the source text (parse, and tailoring's raw resume text in the prompt — ADR-0018); mandatory human review of tailored output | eval-strategy §4.4 & §6; RFC §6.4; flow.md gates 1 & 3; Phase F |
 | R3 | **Auto-apply ToS / account risk** — automated submission violating job-board Terms of Service / risking bans | Med | High | Human confirm before every submission; prefer assisted over fully automated; respect each source's ToS; defer to the last phase | flow.md gate 4; roadmap Phase H; ADR-0007 |
 | R4 | **PII / data privacy** — resumes are sensitive personal data; prompts go to a third-party LLM | High (exposure) | High | Self-hosted Langfuse (traces stay local); keep files local; minimize data sent to OpenAI; gitignore real data; define retention policy | ADR-0005; ADR-0010 (consequences); RFC §9; `.gitignore` (`data/`) |
 | R5 | **Bias / fairness** — tailoring or matching varying on protected-characteristic proxies | Med | High | Advisory-only outputs; add a fairness eval check as matching/tailoring mature; human oversight | eval-strategy §6 (planned); roadmap Phase G |
@@ -71,8 +71,8 @@ because they're good practice and keep that door open safely.
 
 - **Each phase:** re-check this register against what's actually shipping.
 - **Before Phase D (search):** confirm Adzuna ToS compliance.
-- **Before Phase F (tailoring):** confirm the no-fabrication gate is wired and the RAG
-  corpus grounding works.
+- **Before Phase F (tailoring):** confirm the no-fabrication gate is wired and
+  raw-resume-text-in-prompt grounding works (ADR-0018 — no RAG for this phase).
 - **Before Phase H (auto-apply):** the highest-risk review — submission mechanism,
   ToS, human-confirm gate, online monitoring.
 

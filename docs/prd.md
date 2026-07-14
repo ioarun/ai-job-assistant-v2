@@ -176,8 +176,9 @@ separately in RFC §9.)
 **Open questions**
 - [OPEN] **Auto-apply mechanism** — email, portal form-fill, or a browser agent?
   Legality and feasibility need investigation before committing.
-- [OPEN] **Tailored-resume export** — how is the final resume rendered/formatted
-  (PDF templating)?
+- [RESOLVED] **Tailored-resume export** — plain text/Markdown, returned as a string
+  field via the API and rendered as text in the frontend (Phase F). PDF templating
+  deferred to a later pass.
 - [OPEN] **Deployment target** for the eventual hosted version.
 
 ## 8. Out of scope / future
