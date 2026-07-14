@@ -1,0 +1,19 @@
+{
+  "name": "Alex Rivera",
+  "email": "alex.rivera@example.com",
+  "phone": "555-0100",
+  "skills": ["Python", "SQL", "Docker", "FastAPI", "Git"],
+  "work_history": [
+    {
+      "title": "Backend Engineer",
+      "company": "Northwind Data",
+      "start": "2021-03",
+      "end": "2026-01",
+      "highlights": ["Built REST APIs in FastAPI", "Managed Postgres schemas"]
+    }
+  ],
+  "projects": [],
+  "education": [
+    {"degree": "B.S. Computer Science", "institution": "State University", "start": "2017", "end": "2021"}
+  ]
+}

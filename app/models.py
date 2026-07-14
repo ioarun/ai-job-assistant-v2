@@ -19,6 +19,7 @@ class Resume(Base):
     )
 
     parse_runs: Mapped[list["ParseRun"]] = relationship(back_populates="resume")
+    job_picks: Mapped[list["JobPick"]] = relationship(back_populates="resume")
 
 
 class ParseRun(Base):
@@ -36,3 +37,24 @@ class ParseRun(Base):
     )
 
     resume: Mapped["Resume"] = relationship(back_populates="parse_runs")
+
+class JobPick(Base):
+    __tablename__ = "job_pick"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    resume_id: Mapped[int] = mapped_column(ForeignKey("resume.id"))
+    title: Mapped[str]
+    company: Mapped[str | None]
+    location: Mapped[str | None]
+    description: Mapped[str | None]
+    url: Mapped[str | None]
+    salary_min: Mapped[float | None]
+    salary_max: Mapped[float | None]
+    score: Mapped[int | None]
+    reason: Mapped[str | None]
+    picked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    resume: Mapped["Resume"] = relationship(back_populates="job_picks")
+

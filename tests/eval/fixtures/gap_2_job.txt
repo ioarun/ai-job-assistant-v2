@@ -1,0 +1,13 @@
+Frontend Engineer — Bluefin Retail
+
+We're hiring a frontend engineer to help build our next-generation storefront.
+You'll write React and TypeScript components, ensure our UI is accessible, and
+help migrate parts of our data layer to GraphQL.
+
+Required:
+- React
+- TypeScript
+- Web accessibility (WCAG) experience
+- GraphQL
+
+Nice to have: Jest, Cypress for end-to-end testing.

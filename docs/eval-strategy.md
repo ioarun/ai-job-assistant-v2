@@ -135,7 +135,7 @@ These reuse the same harness (dataset → grader → CI gate); numbers from PRD 
 | Stage | Primary grader | Metric / bar | Notes |
 |---|---|---|---|
 | **Job relevance** | human (+ LLM-judge to scale) | **precision@10 ≥ 70%** | needs a human-rated relevance set; LLM-judge calibrated to human labels |
-| **Gap analysis** | code vs. labeled gap set | precision/recall **[OPEN — define bar]** (PRD §6) | label the true gaps for a resume×job pair |
+| **Gap analysis** | code vs. labeled gap set | precision/recall **≥ 80%** (matched + missing skills, unweighted mean) | label the true gaps for a resume×job pair; hard zero-fabrication gate (`tests/eval/eval_gap_analysis.py`) |
 | **Tailored resume** | LLM-judge + code | **≥ 80%** coverage of *has*-skills; **zero fabrication** (hard); no contradiction with source | grounded against the source resume |
 | **Cover letter** | LLM-judge | consistent with resume+job; **zero fabrication** (hard) | tone/consistency rubric |
 
@@ -157,6 +157,5 @@ Out of scope for the MVP; listed so the tracing/dataset design anticipates it.
   datasets) — driven by the PII constraint.
 - [OPEN] Exact grounding/no-fabrication check method (programmatic vs. LLM-judge mix).
 - [OPEN] Eval tooling graduation point (pytest+fixtures → Langfuse datasets).
-- [OPEN] Gap-analysis precision/recall bar (inherited from PRD §6).
 - [OPEN] Judge model + cost budget for LLM-as-judge in later stages.
 - [OPEN] Fairness/bias check definition for the matching/tailoring stages.

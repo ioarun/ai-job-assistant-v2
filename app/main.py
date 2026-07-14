@@ -12,9 +12,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import get_db
+from app.gap_analysis import analyze_gap
 from app.graph import build_graph
-from app.models import ParseRun, Resume
+from app.job_source import AdzunaJobSource
+from app.models import JobPick, ParseRun, Resume
 from app.parse import MODEL, PROMPT_VERSION
+from app.rank import rank_jobs
+from app.schemas import ParsedResume, RankedJob
 
 
 @asynccontextmanager
@@ -131,6 +135,84 @@ async def submit_corrections(resume_id: int, body: CorrectionsRequest):
         config=config,
     )
     return {"resume_id": resume_id, **_graph_result_to_response(result)}
+
+class JobSearchRequest(BaseModel):
+    resume_id: int
+    keywords: str
+    location: str | None = None
+
+
+@app.post("/jobs/search")
+async def search_jobs(body: JobSearchRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(ParseRun)
+        .where(ParseRun.resume_id == body.resume_id)
+        .order_by(ParseRun.id.desc())
+        .limit(1)
+    )
+    parse_run = result.scalar_one_or_none()
+    if parse_run is None or parse_run.status != "approved":
+        raise HTTPException(
+            status_code=400, detail="Resume must be approved before job search"
+        )
+
+    resume = ParsedResume(**parse_run.parsed)
+    jobs = AdzunaJobSource().search(body.keywords, body.location)
+    ranked = rank_jobs(resume, jobs)
+
+    return {"resume_id": body.resume_id, "jobs": [r.model_dump() for r in ranked]}
+
+
+class JobPickRequest(BaseModel):
+    resume_id: int
+    picked: RankedJob
+
+
+@app.post("/jobs/pick")
+async def pick_job(body: JobPickRequest, db: AsyncSession = Depends(get_db)):
+    job = body.picked.job
+    job_pick = JobPick(
+        resume_id=body.resume_id,
+        title=job.title,
+        company=job.company,
+        location=job.location,
+        description=job.description,
+        url=job.url,
+        salary_min=job.salary_min,
+        salary_max=job.salary_max,
+        score=body.picked.score,
+        reason=body.picked.reason,
+    )
+    db.add(job_pick)
+    await db.commit()
+
+    return {"resume_id": body.resume_id, "job_pick_id": job_pick.id}
+
+
+@app.post("/jobs/{job_pick_id}/gap-analysis")
+async def gap_analysis(job_pick_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(JobPick).where(JobPick.id == job_pick_id))
+    job_pick = result.scalar_one_or_none()
+    if job_pick is None:
+        raise HTTPException(status_code=404, detail="Job pick not found")
+
+    result = await db.execute(
+        select(ParseRun)
+        .where(ParseRun.resume_id == job_pick.resume_id, ParseRun.status == "approved")
+        .order_by(ParseRun.id.desc())
+        .limit(1)
+    )
+    parse_run = result.scalar_one_or_none()
+    if parse_run is None:
+        raise HTTPException(
+            status_code=400, detail="No approved resume found for this job pick"
+        )
+
+    resume = ParsedResume(**parse_run.parsed)
+    report = analyze_gap(resume, job_pick.description or "")
+
+    return {"job_pick_id": job_pick_id, "gap_report": report.model_dump()}
+
 
 
 @app.get("/hello")

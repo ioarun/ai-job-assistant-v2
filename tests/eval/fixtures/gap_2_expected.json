@@ -1,0 +1,4 @@
+{
+  "matched_skills": ["React", "TypeScript", "Jest"],
+  "missing_skills": ["Web accessibility (WCAG)", "GraphQL", "Cypress"]
+}

@@ -36,20 +36,54 @@
   <span class="status">Approved</span>
   <div id="approved-fields"></div>
   <div style="margin-top: 18px;">
+    <button id="search-jobs-nav-btn">Search for Jobs</button>
     <button id="reset-btn">Review Another Resume</button>
+  </div>
+</section>
+
+<section id="view-job-search" class="card hidden">
+  <span class="status">Job Search</span>
+  <div class="field">
+    <label for="keywords-input">Keywords</label><br>
+    <input type="text" id="keywords-input" placeholder="e.g. python developer">
+  </div>
+  <div class="field">
+    <label for="location-input">Location (optional)</label><br>
+    <input type="text" id="location-input" placeholder="e.g. melbourne">
+  </div>
+  <button id="search-jobs-btn">Search Jobs</button>
+  <p class="error hidden" id="search-error"></p>
+  <div id="job-results" style="margin-top: 20px;"></div>
+</section>
+
+<section id="view-job-picked" class="card hidden">
+  <span class="status">Job Picked</span>
+  <div id="picked-job-fields"></div>
+  <div style="margin-top: 18px;">
+    <button id="gap-analysis-btn">Run Gap Analysis</button>
+  </div>
+  <div id="gap-report-fields" style="margin-top: 18px;"></div>
+  <div style="margin-top: 18px;">
+    <button id="search-again-btn">Search Again</button>
+    <button id="start-over-btn">Start Over</button>
   </div>
 </section>
 
 <script>
 const API_BASE = "http://localhost:8000";
 let resumeId = null;
+let jobPickId = null;
 
 const viewUpload = document.getElementById("view-upload");
 const viewReview = document.getElementById("view-review");
 const viewApproved = document.getElementById("view-approved");
+const viewJobSearch = document.getElementById("view-job-search");
+const viewJobPicked = document.getElementById("view-job-picked");
+
+const allViews = [viewUpload, viewReview, viewApproved, viewJobSearch, viewJobPicked];
 
 function showView(view) {
-  [viewUpload, viewReview, viewApproved].forEach(v => v.classList.add("hidden"));
+  allViews.forEach(v => v.classList.add("hidden"));
   view.classList.remove("hidden");
 }
 
@@ -60,8 +94,9 @@ function setButtonLoading(button, isLoading, loadingLabel, originalLabel) {
     : originalLabel;
 }
 
+const esc = (s) => (s ?? "").toString();
+
 function renderParsed(container, parsed) {
-  const esc = (s) => (s ?? "").toString();
   let html = "";
   html += field("Name", parsed.name);
   html += field("Email", parsed.email);
@@ -98,6 +133,83 @@ function renderParsed(container, parsed) {
   }
 }
 
+let lastSearchResults = [];
+
+function renderJobResults(container, ranked) {
+  lastSearchResults = ranked;
+
+  if (!ranked.length) {
+    container.innerHTML = `<p>No results. Try different keywords.</p>`;
+    return;
+  }
+
+  let html = "";
+  ranked.forEach((r, i) => {
+    const job = r.job;
+    const salary = (job.salary_min || job.salary_max)
+      ? `<div class="label">Salary: ${esc(job.salary_min ?? "?")} – ${esc(job.salary_max ?? "?")}</div>`
+      : "";
+    const link = job.url
+      ? `<a href="${esc(job.url)}" target="_blank" rel="noopener">View posting</a> · `
+      : "";
+    html += `<div class="entry">
+      <strong>${esc(job.title)}</strong> — ${esc(job.company)}<br>
+      <span class="label">${esc(job.location)} · fit score ${esc(r.score)}</span>
+      <div class="value">${esc(r.reason)}</div>
+      ${salary}
+      <div style="margin-top: 8px;">
+        ${link}<button data-pick-index="${i}" class="pick-job-btn">Pick this job</button>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+
+  container.querySelectorAll(".pick-job-btn").forEach(btn => {
+    btn.addEventListener("click", () => pickJob(lastSearchResults[Number(btn.dataset.pickIndex)]));
+  });
+}
+
+function renderPickedJob(container, ranked) {
+  const job = ranked.job;
+  let html = `<div class="entry">
+    <strong>${esc(job.title)}</strong> — ${esc(job.company)}<br>
+    <span class="label">${esc(job.location)} · fit score ${esc(ranked.score)}</span>
+    <div class="value">${esc(ranked.reason)}</div>
+  </div>`;
+  container.innerHTML = html;
+}
+
+async function pickJob(ranked) {
+  const res = await fetch(`${API_BASE}/jobs/pick`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ resume_id: resumeId, picked: ranked }),
+  });
+  const data = await res.json();
+  jobPickId = data.job_pick_id;
+  document.getElementById("gap-report-fields").innerHTML = "";
+  renderPickedJob(document.getElementById("picked-job-fields"), ranked);
+  showView(viewJobPicked);
+}
+
+function renderGapReport(container, report) {
+  const matched = (report.matched_skills || []).map(s => `<li>${esc(s)}</li>`).join("");
+  const missing = (report.missing_skills || []).map(s => `<li>${esc(s)}</li>`).join("");
+  container.innerHTML = `
+    <div class="field">
+      <span class="label">Match Score</span>
+      <div class="value">${esc(report.match_score)} / 100</div>
+    </div>
+    <div class="field">
+      <span class="label">Matched Skills</span>
+      <ul>${matched}</ul>
+    </div>
+    <div class="field">
+      <span class="label">Missing Skills</span>
+      <ul>${missing}</ul>
+    </div>
+  `;
+}
 
 document.getElementById("upload-btn").addEventListener("click", async () => {
   const button = document.getElementById("upload-btn");
@@ -172,6 +284,73 @@ document.getElementById("corrections-btn").addEventListener("click", async () =>
 document.getElementById("reset-btn").addEventListener("click", () => {
   resumeId = null;
   document.getElementById("file-input").value = "";
+  showView(viewUpload);
+});
+
+document.getElementById("search-jobs-nav-btn").addEventListener("click", () => {
+  showView(viewJobSearch);
+});
+
+document.getElementById("search-jobs-btn").addEventListener("click", async () => {
+  const button = document.getElementById("search-jobs-btn");
+  const keywords = document.getElementById("keywords-input").value.trim();
+  const location = document.getElementById("location-input").value.trim();
+  const errorEl = document.getElementById("search-error");
+  errorEl.classList.add("hidden");
+
+  if (!keywords) {
+    errorEl.textContent = "Enter some keywords first.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  setButtonLoading(button, true, "Searching &amp; ranking… (a few seconds)", "Search Jobs");
+  try {
+    const res = await fetch(`${API_BASE}/jobs/search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resume_id: resumeId, keywords, location: location || null }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errorEl.textContent = data.detail || "Search failed.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    renderJobResults(document.getElementById("job-results"), data.jobs);
+  } catch (err) {
+    errorEl.textContent = "Could not reach the server. Is it running?";
+    errorEl.classList.remove("hidden");
+  } finally {
+    setButtonLoading(button, false, "", "Search Jobs");
+  }
+});
+
+document.getElementById("gap-analysis-btn").addEventListener("click", async () => {
+  const button = document.getElementById("gap-analysis-btn");
+  setButtonLoading(button, true, "Analyzing… (a few seconds)", "Run Gap Analysis");
+  try {
+    const res = await fetch(`${API_BASE}/jobs/${jobPickId}/gap-analysis`, { method: "POST" });
+    const data = await res.json();
+    renderGapReport(document.getElementById("gap-report-fields"), data.gap_report);
+  } finally {
+    setButtonLoading(button, false, "", "Run Gap Analysis");
+  }
+});
+
+document.getElementById("search-again-btn").addEventListener("click", () => {
+  document.getElementById("job-results").innerHTML = "";
+  showView(viewJobSearch);
+});
+
+document.getElementById("start-over-btn").addEventListener("click", () => {
+  resumeId = null;
+  document.getElementById("file-input").value = "";
+  document.getElementById("keywords-input").value = "";
+  document.getElementById("location-input").value = "";
+  document.getElementById("job-results").innerHTML = "";
   showView(viewUpload);
 });
 </script>

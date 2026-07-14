@@ -141,8 +141,9 @@ The smallest end-to-end, observable, valuable capability:
   entries** (info not present in the source). [ASSUMPTION on threshold]
 - **Job relevance:** ≥70% of the top-10 returned jobs rated "relevant" by a human
   reviewer (precision@10). [ASSUMPTION on threshold]
-- **Gap analysis:** identified gaps match a human-labeled gap set within an agreed
-  precision/recall bar. [OPEN — define bar]
+- **Gap analysis:** identified gaps match a human-labeled gap set with **≥80%
+  precision/recall** (matched + missing skills, unweighted mean); zero fabrication
+  (hard gate).
 - **Tailored resume:** covers ≥80% of the target job's required skills that the
   applicant *actually has*; **exactly zero fabricated skills/experience** (hard
   constraint — a single fabrication fails the eval); no factual contradictions

@@ -52,3 +52,19 @@ Use the official **Postgres checkpointer** (`langgraph-checkpoint-postgres`,
 
 Builds on ADR-0003 (LangGraph orchestration) and ADR-0009 (Postgres as the app database);
 feeds the Phase C review-gate graph.
+
+## Addendum (2026-07-12) — the consequence above actually happened
+
+While adding Phase D's `JobPick` model, `alembic revision --autogenerate` diffed the live
+database against `app/models.py`, saw LangGraph's checkpoint tables (real, but never
+declared in our SQLAlchemy models — exactly the gap flagged above), and concluded they
+shouldn't exist. It generated `DROP TABLE` statements for all four, and `alembic upgrade
+head` executed them — deleting the checkpoint state for every resume then sitting in
+`awaiting_review`. The abstract warning in this ADR wasn't concrete enough to prevent it.
+
+**Fix:** `migrations/env.py` now passes an `include_object` callback to
+`context.configure()` that excludes `checkpoints`, `checkpoint_blobs`,
+`checkpoint_writes`, and `checkpoint_migrations` from autogenerate diffing entirely.
+Verified by generating a migration after the fix with the checkpoint tables present —
+it correctly detected zero drift. Any future `alembic revision --autogenerate` is safe
+by construction; this is not something to remember to check by hand anymore.

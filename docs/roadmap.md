@@ -125,15 +125,16 @@ relevance measured against precision@10 ≥70% (eval-strategy §6).
 
 ## Phase E — Gap analysis
 
-**Goal:** for the selected job, compute a match score + honest skill gaps, and suggest
-upskilling resources.
+**Goal:** for the selected job, compute a match score + honest skill gaps.
 
-**Scope — in:** per-job gap analysis (flow.md stage 3); upskilling suggestions (RAG
-over a curated resource catalog to avoid hallucinated courses/links). **Out:**
-tailoring (Phase F).
+**Scope — in:** per-job gap analysis (flow.md stage 3) — a single Structured-Outputs
+call returning `GapReport` (match score, matched skills, missing skills). **Out:**
+tailoring (Phase F); upskilling resource suggestions (ADR-0017 — removed from project
+scope entirely, not merely deferred to a later phase).
 
 **Exit criteria:** gaps for a resume×job pair meet the precision/recall bar
-([OPEN] — define, PRD §6); resource suggestions are real (retrieved, not invented).
+(**≥80%**, matched + missing skills, unweighted mean; zero fabrication hard gate —
+PRD §6, `tests/eval/eval_gap_analysis.py`).
 
 **Eval / Responsible-AI note:** no automated decision *about the candidate* — gaps are
 advisory (PRD §7).
@@ -197,7 +198,6 @@ human confirm before any submission, online evals + human review queue.
 - [OPEN] CI provider (assumed GitHub Actions).
 - [OPEN] When exactly the vector store is introduced (Phase D) and which (pgvector vs.
   dedicated) → candidate ADR.
-- [OPEN] Gap-analysis precision/recall bar (inherited from PRD §6 / eval-strategy).
 - [OPEN] Tailored-resume export format (PRD §7).
 - [OPEN] Auto-apply mechanism + deployment target (PRD §7).
 - [OPEN] Per-technique exit criteria for Phase G.

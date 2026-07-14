@@ -1,0 +1,19 @@
+{
+  "name": "Priya Nair",
+  "email": "priya.nair@example.com",
+  "phone": "555-0142",
+  "skills": ["JavaScript", "TypeScript", "React", "CSS", "Jest"],
+  "work_history": [
+    {
+      "title": "Frontend Developer",
+      "company": "Bluefin Retail",
+      "start": "2022-06",
+      "end": "2026-02",
+      "highlights": ["Built component library in React and TypeScript", "Wrote unit tests with Jest"]
+    }
+  ],
+  "projects": [],
+  "education": [
+    {"degree": "B.S. Information Systems", "institution": "Coastal Tech Institute", "start": "2018", "end": "2022"}
+  ]
+}

@@ -1,0 +1,14 @@
+Senior Backend Engineer — Northwind Data
+
+We're looking for a backend engineer with strong Python and SQL skills to
+join our platform team. You'll build and maintain REST APIs, work with
+Docker-based deployments, and collaborate closely with the data team.
+
+Required:
+- Python
+- SQL
+- Docker
+- Experience with Kubernetes
+- Experience with Apache Kafka
+
+Nice to have: FastAPI, Git.

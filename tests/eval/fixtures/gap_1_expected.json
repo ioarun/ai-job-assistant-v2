@@ -1,0 +1,4 @@
+{
+  "matched_skills": ["Python", "SQL", "Docker", "FastAPI", "Git"],
+  "missing_skills": ["Kubernetes", "Apache Kafka"]
+}
