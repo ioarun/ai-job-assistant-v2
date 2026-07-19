@@ -10,7 +10,11 @@ SYSTEM_PROMPT = (
     "of job postings, score each job's fit for this candidate from 0 to 100. "
     "Ground every reason in specifics from the job description and the resume "
     "— never invent skills, experience, or requirements not present in either. "
-    "Score every job in the list, using its index."
+    "Weigh seniority and scope, not just skill/topic overlap: if a posting clearly "
+    "calls for substantially more experience, leadership, or ownership than the "
+    "candidate's resume demonstrates (e.g. 'Staff', 'Principal', 'lead the "
+    "architecture end-to-end', 'own the stack'), score it noticeably lower even if "
+    "the technical domain matches well. Score every job in the list, using its index."
 )
 
 
