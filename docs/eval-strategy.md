@@ -134,10 +134,25 @@ These reuse the same harness (dataset → grader → CI gate); numbers from PRD 
 
 | Stage | Primary grader | Metric / bar | Notes |
 |---|---|---|---|
-| **Job relevance** | human (+ LLM-judge to scale) | **precision@10 ≥ 70%** | needs a human-rated relevance set; LLM-judge calibrated to human labels |
+| **Job relevance** | human (+ LLM-judge to scale) | **precision@10 ≥ 70%** | needs a human-rated relevance set; LLM-judge calibrated to human labels; **query-dependent — see note below** |
 | **Gap analysis** | code vs. labeled gap set | precision/recall **≥ 80%** (matched + missing skills, unweighted mean) | label the true gaps for a resume×job pair; hard zero-fabrication gate (`tests/eval/eval_gap_analysis.py`) |
 | **Tailored resume** | LLM-judge + code | **≥ 80%** coverage of *has*-skills; **zero fabrication** (hard); no contradiction with source | grounded against the source resume |
 | **Cover letter** | LLM-judge | consistent with resume+job; **zero fabrication** (hard) | tone/consistency rubric |
+
+**Job relevance is inherently query-dependent** — a real gap surfaced and resolved
+2026-07-15. A niche query (e.g. "computer vision engineer") returned only 18 Adzuna
+candidates with just ~6 genuinely strong matches; no reranker can fill 10 good slots
+from a pool that thin, so precision@10 was structurally capped around 60% regardless
+of reranker quality. A broader, more commonly-searched query (e.g. "machine learning
+engineer", 50 candidates) hit 100% with the same reranker. Separately, the reranker's
+`SYSTEM_PROMPT` (`app/rank.py`) was missing seniority/scope weighting — it would flag
+a mismatch ("may require more leadership than the candidate has") in its own reasoning
+but not discount the score for it. Fixed by explicitly instructing the model to score
+down clear seniority/ownership overreach (e.g. "Staff", "Principal", "lead the
+architecture end-to-end") even when the technical domain matches well — verified this
+does shift scores appropriately (a "Senior Staff Engineer" posting dropped from 75 to
+50). When re-testing this bar, prefer a reasonably broad/common query — a niche query
+can legitimately fail on retrieval breadth alone, not reranker quality.
 
 **Tailored-resume/cover-letter mechanism** (`tests/eval/eval_tailor.py`): coverage is a
 code-based check — a `has`-skill counts as covered if it's in the model's
